@@ -1,33 +1,36 @@
-import React, { Component } from "react";
-import { Header, List } from "semantic-ui-react";
+import React, { useState, useEffect } from "react";
+import { List, Container } from "semantic-ui-react";
 import axios from "axios";
-import "./App.css";
 
-class App extends Component {
-  state = {
-    values: []
+import Header from "./components/header/header";
+import Dashboard from "./components/dashboard/dashboard";
+
+const App = () => {
+  const [activities, setActivities] = useState([]);
+  const [selectedActivity, setselectedActivity] = useState(null);
+
+  const handleSelectActivity = id => {
+    setselectedActivity(activities.filter(a => a.id === id)[0]);
   };
 
-  componentDidMount() {
-    axios.get("http://localhost:5000/api/values").then(response => {
-      this.setState({
-        values: response.data
-      });
+  useEffect(() => {
+    axios.get("http://localhost:5000/api/activities").then(response => {
+      setActivities(response.data);
     });
-  }
+  }, []);
 
-  render() {
-    return (
-      <div>
-        <Header as="h2" icon="users" content="Reactivities" />
-        <List>
-          {this.state.values.map(value => (
-            <List.Item key={value.id}>{value.name}</List.Item>
-          ))}
-        </List>
-      </div>
-    );
-  }
-}
+  return (
+    <>
+      <Header />
+      <Container style={{ marginTop: "7em" }}>
+        <Dashboard
+          activities={activities}
+          selectActivity={handleSelectActivity}
+          selectedActivity={selectedActivity}
+        />
+      </Container>
+    </>
+  );
+};
 
 export default App;

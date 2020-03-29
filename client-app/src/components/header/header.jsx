@@ -1,7 +1,7 @@
 import React from "react";
 import { Menu, Container, Button } from "semantic-ui-react";
 
-const Header = () => {
+const Header = ({ openCreateForm }) => {
   return (
     <Menu fixed="top" inverted>
       <Container>
@@ -15,7 +15,11 @@ const Header = () => {
         </Menu.Item>
         <Menu.Item name="Activities" />
         <Menu.Item>
-          <Button positive content="Create activity" />
+          <Button
+            onClick={() => openCreateForm()}
+            positive
+            content="Create activity"
+          />
         </Menu.Item>
       </Container>
     </Menu>

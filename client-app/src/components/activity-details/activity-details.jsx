@@ -1,7 +1,7 @@
 import React from "react";
-import { Card, Image, Icon, Button } from "semantic-ui-react";
+import { Card, Image, Button } from "semantic-ui-react";
 
-const ActivityDetails = ({ activity }) => {
+const ActivityDetails = ({ activity, setEditMode, setSelectedActivity }) => {
   return (
     <Card fluid>
       <Image
@@ -18,8 +18,18 @@ const ActivityDetails = ({ activity }) => {
       </Card.Content>
       <Card.Content extra>
         <Button.Group widths={2}>
-          <Button basic color="blue" content="Edit" />
-          <Button basic color="grey" content="Cancel" />
+          <Button
+            onClick={() => setEditMode(true)}
+            basic
+            color="blue"
+            content="Edit"
+          />
+          <Button
+            onClick={() => setSelectedActivity(null)}
+            basic
+            color="grey"
+            content="Cancel"
+          />
         </Button.Group>
       </Card.Content>
     </Card>

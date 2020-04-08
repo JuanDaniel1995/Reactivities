@@ -1,13 +1,25 @@
 import React, { useState } from "react";
+import { connect } from "react-redux";
+import { createStructuredSelector } from "reselect";
 import { Form, Button, Segment } from "semantic-ui-react";
 import { v4 as uuid } from "uuid";
 
+import { setEditMode } from "../../redux/activity/activity.actions";
+import { createActivityStart } from "../../redux/activity/activity.actions";
+import { editActivityStart } from "../../redux/activity/activity.actions";
+
+import { selectedActivity } from "../../redux/activity/activity.selectors";
+import { selectedActivityId } from "../../redux/activity/activity.selectors";
+import { selectEditMode } from "../../redux/activity/activity.selectors";
+import { selectSubmitting } from "../../redux/activity/activity.selectors";
+
 const ActivityForm = ({
+  editMode,
   setEditMode,
   activity: initialFormState,
   createActivity,
   editActivity,
-  submitting
+  submitting,
 }) => {
   const initializeForm = () => {
     if (initialFormState) {
@@ -20,7 +32,7 @@ const ActivityForm = ({
         description: "",
         date: "",
         city: "",
-        venue: ""
+        venue: "",
       };
     }
   };
@@ -31,7 +43,7 @@ const ActivityForm = ({
     if (activity.id.length === 0) {
       let newActivity = {
         ...activity,
-        id: uuid
+        id: uuid(),
       };
       createActivity(newActivity);
     } else {
@@ -39,13 +51,14 @@ const ActivityForm = ({
     }
   };
 
-  const handleInputChange = event => {
+  const handleInputChange = (event) => {
     const { name, value } = event.target;
     setActivity({ ...activity, [name]: value });
   };
 
-  return (
+  return editMode ? (
     <Segment clearing>
+      <h1>{activity.title}</h1>
       <Form onSubmit={handleSubmit}>
         <Form.Input
           onChange={handleInputChange}
@@ -100,7 +113,20 @@ const ActivityForm = ({
         />
       </Form>
     </Segment>
-  );
+  ) : null;
 };
 
-export default ActivityForm;
+const mapStateToProps = createStructuredSelector({
+  activity: selectedActivity,
+  editMode: selectEditMode,
+  key: selectedActivityId,
+  submitting: selectSubmitting,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  setEditMode: (mode) => dispatch(setEditMode(mode)),
+  createActivity: (activity) => dispatch(createActivityStart(activity)),
+  editActivity: (activity) => dispatch(editActivityStart(activity)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(ActivityForm);

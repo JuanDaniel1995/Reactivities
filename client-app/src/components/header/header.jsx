@@ -1,5 +1,8 @@
 import React from "react";
+import { connect } from "react-redux";
 import { Menu, Container, Button } from "semantic-ui-react";
+
+import { openCreateForm } from "../../redux/activity/activity.actions";
 
 const Header = ({ openCreateForm }) => {
   return (
@@ -26,4 +29,8 @@ const Header = ({ openCreateForm }) => {
   );
 };
 
-export default Header;
+const mapDispatchToProps = (dispatch) => ({
+  openCreateForm: () => dispatch(openCreateForm()),
+});
+
+export default connect(null, mapDispatchToProps)(Header);

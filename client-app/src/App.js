@@ -1,103 +1,43 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
+import { connect } from "react-redux";
+import { createStructuredSelector } from "reselect";
 import { Container, Dimmer, Loader } from "semantic-ui-react";
+
+import { fetchActivitiesStart } from "./redux/activity/activity.actions";
+import { selectIsActivityFetching } from "./redux/activity/activity.selectors";
 
 import Header from "./components/header/header";
 import Dashboard from "./components/dashboard/dashboard";
-import agent from "./api/agent";
 
-const App = () => {
-  const [activities, setActivities] = useState([]);
-  const [selectedActivity, setSelectedActivity] = useState(null);
-  const [editMode, setEditMode] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
-  const [target, setTarget] = useState("");
-
-  const handleSelectActivity = id => {
-    setSelectedActivity(activities.filter(a => a.id === id)[0]);
-    setEditMode(false);
-  };
-
-  const handleOpenCreateForm = () => {
-    setSelectedActivity(null);
-    setEditMode(true);
-  };
-
-  const handleCreateActivity = activity => {
-    setSubmitting(true);
-    agent.Activities.create(activity)
-      .then(() => {
-        setActivities([...activities, activity]);
-        setSelectedActivity(activity);
-        setEditMode(false);
-      })
-      .then(() => setSubmitting(false));
-  };
-
-  const handleEditActivity = activity => {
-    setSubmitting(true);
-    agent.Activities.update(activity)
-      .then(() => {
-        setActivities([
-          ...activities.filter(a => a.id !== activity.id),
-          activity
-        ]);
-        setSelectedActivity(activity);
-        setEditMode(false);
-      })
-      .then(() => setSubmitting(false));
-  };
-
-  const handleDeleteActivity = (event, id) => {
-    setSubmitting(true);
-    setTarget(event.currentTarget.name);
-    agent.Activities.delete(id)
-      .then(() => {
-        setActivities([...activities.filter(a => a.id !== id)]);
-      })
-      .then(() => setSubmitting(false));
-  };
-
+const App = ({ fetchActivities, isFetching }) => {
   useEffect(() => {
-    agent.Activities.list()
-      .then(response => {
-        let activities = [];
-        response.forEach(activity => {
-          activity.date = activity.date.split(".")[0];
-          activities.push(activity);
-        });
-        setActivities(activities);
-      })
-      .then(() => setLoading(false));
-  }, []);
+    fetchActivities();
+  }, [fetchActivities]);
 
-  if (loading)
+  if (isFetching) {
     return (
       <Dimmer active inverted>
         <Loader content="Loading components" />
       </Dimmer>
     );
+  }
 
   return (
     <>
-      <Header openCreateForm={handleOpenCreateForm} />
+      <Header />
       <Container style={{ marginTop: "7em" }}>
-        <Dashboard
-          activities={activities}
-          selectActivity={handleSelectActivity}
-          selectedActivity={selectedActivity}
-          editMode={editMode}
-          setEditMode={setEditMode}
-          setSelectedActivity={setSelectedActivity}
-          createActivity={handleCreateActivity}
-          editActivity={handleEditActivity}
-          deleteActivity={handleDeleteActivity}
-          submitting={submitting}
-          target={target}
-        />
+        <Dashboard />
       </Container>
     </>
   );
 };
 
-export default App;
+const mapStateToProps = createStructuredSelector({
+  isFetching: selectIsActivityFetching,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  fetchActivities: () => dispatch(fetchActivitiesStart()),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

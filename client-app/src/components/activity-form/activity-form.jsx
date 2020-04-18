@@ -1,43 +1,56 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
-import { Form, Button, Segment } from "semantic-ui-react";
+import { Form, Button, Segment, Dimmer, Loader } from "semantic-ui-react";
 import { v4 as uuid } from "uuid";
 
-import { setEditMode } from "../../redux/activity/activity.actions";
-import { createActivityStart } from "../../redux/activity/activity.actions";
-import { editActivityStart } from "../../redux/activity/activity.actions";
+import {
+  fetchActivityStart,
+  createActivityStart,
+  editActivityStart,
+  setFetching,
+} from "../../redux/activity/activity.actions";
 
-import { selectedActivity } from "../../redux/activity/activity.selectors";
-import { selectedActivityId } from "../../redux/activity/activity.selectors";
-import { selectEditMode } from "../../redux/activity/activity.selectors";
-import { selectSubmitting } from "../../redux/activity/activity.selectors";
+import {
+  selectActivity,
+  selectActivityId,
+  selectEditMode,
+  selectSubmitting,
+  selectIsActivityFetching,
+} from "../../redux/activity/activity.selectors";
 
 const ActivityForm = ({
-  editMode,
-  setEditMode,
   activity: initialFormState,
+  fetchActivity,
   createActivity,
   editActivity,
   submitting,
+  match: {
+    params: { id },
+  },
+  history: { push },
+  isFetching,
+  setFetching,
 }) => {
-  const initializeForm = () => {
-    if (initialFormState) {
-      return initialFormState;
-    } else {
-      return {
-        id: "",
-        title: "",
-        category: "",
-        description: "",
-        date: "",
-        city: "",
-        venue: "",
-      };
-    }
-  };
+  const [activity, setActivity] = useState(
+    initialFormState
+      ? initialFormState
+      : {
+          id: "",
+          title: "",
+          category: "",
+          description: "",
+          date: "",
+          city: "",
+          venue: "",
+        }
+  );
 
-  const [activity, setActivity] = useState(initializeForm);
+  useEffect(() => {
+    if (id && (!initialFormState || initialFormState.id !== id)) {
+      fetchActivity(id);
+    }
+  }, [fetchActivity, initialFormState, id]);
 
   const handleSubmit = () => {
     if (activity.id.length === 0) {
@@ -45,10 +58,14 @@ const ActivityForm = ({
         ...activity,
         id: uuid(),
       };
-      createActivity(newActivity);
+      createActivity(newActivity, () => redirectToActivity(newActivity.id));
     } else {
-      editActivity(activity);
+      editActivity(activity, () => redirectToActivity(activity.id));
     }
+  };
+
+  const redirectToActivity = (id) => {
+    push(`/activities/${id}`);
   };
 
   const handleInputChange = (event) => {
@@ -56,47 +73,54 @@ const ActivityForm = ({
     setActivity({ ...activity, [name]: value });
   };
 
-  return editMode ? (
+  if (isFetching) {
+    return (
+      <Dimmer active inverted>
+        <Loader content="Loading activity..." />
+      </Dimmer>
+    );
+  }
+
+  return (
     <Segment clearing>
-      <h1>{activity.title}</h1>
       <Form onSubmit={handleSubmit}>
         <Form.Input
           onChange={handleInputChange}
           name="title"
           placeholder="Title"
-          value={activity.title}
+          value={activity && activity.title}
         />
         <Form.TextArea
           onChange={handleInputChange}
           name="description"
           row={2}
           placeholder="Description"
-          value={activity.description}
+          value={activity && activity.description}
         />
         <Form.Input
           onChange={handleInputChange}
           name="category"
           placeholder="Category"
-          value={activity.category}
+          value={activity && activity.category}
         />
         <Form.Input
           onChange={handleInputChange}
           name="date"
           type="datetime-local"
           placeholder="Date"
-          value={activity.date}
+          value={activity && activity.date}
         />
         <Form.Input
           onChange={handleInputChange}
           name="city"
           placeholder="City"
-          value={activity.city}
+          value={activity && activity.city}
         />
         <Form.Input
           onChange={handleInputChange}
           name="venue"
           placeholder="Venue"
-          value={activity.venue}
+          value={activity && activity.venue}
         />
         <Button
           loading={submitting}
@@ -106,27 +130,31 @@ const ActivityForm = ({
           content="Submit"
         />
         <Button
-          onClick={() => setEditMode(false)}
           floated="right"
           type="button"
           content="Cancel"
+          onClick={() => (id ? redirectToActivity(id) : push("/activities"))}
         />
       </Form>
     </Segment>
-  ) : null;
+  );
 };
 
 const mapStateToProps = createStructuredSelector({
-  activity: selectedActivity,
+  activity: selectActivity,
   editMode: selectEditMode,
-  key: selectedActivityId,
+  key: selectActivityId,
   submitting: selectSubmitting,
+  isFetching: selectIsActivityFetching,
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  setEditMode: (mode) => dispatch(setEditMode(mode)),
-  createActivity: (activity) => dispatch(createActivityStart(activity)),
-  editActivity: (activity) => dispatch(editActivityStart(activity)),
+  fetchActivity: (id) => dispatch(fetchActivityStart(id)),
+  createActivity: (activity, callback) =>
+    dispatch(createActivityStart(activity, callback)),
+  editActivity: (activity, callback) =>
+    dispatch(editActivityStart(activity, callback)),
+  setFetching: (fetching) => dispatch(setFetching(fetching)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ActivityForm);

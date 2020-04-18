@@ -1,33 +1,37 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { connect } from "react-redux";
+import { Route } from "react-router-dom";
 import { createStructuredSelector } from "reselect";
-import { Container, Dimmer, Loader } from "semantic-ui-react";
+import { Container } from "semantic-ui-react";
 
-import { fetchActivitiesStart } from "./redux/activity/activity.actions";
 import { selectIsActivityFetching } from "./redux/activity/activity.selectors";
 
 import Header from "./components/header/header";
 import Dashboard from "./components/dashboard/dashboard";
+import HomePage from "./pages/home/home";
+import ActivityForm from "./components/activity-form/activity-form";
+import ActivityDetails from "./components/activity-details/activity-details";
 
-const App = ({ fetchActivities, isFetching }) => {
-  useEffect(() => {
-    fetchActivities();
-  }, [fetchActivities]);
-
-  if (isFetching) {
-    return (
-      <Dimmer active inverted>
-        <Loader content="Loading components" />
-      </Dimmer>
-    );
-  }
-
+const App = () => {
   return (
     <>
-      <Header />
-      <Container style={{ marginTop: "7em" }}>
-        <Dashboard />
-      </Container>
+      <Route exact path="/" component={HomePage} />
+      <Route
+        path={"/(.+)"}
+        render={() => (
+          <>
+            <Header />
+            <Container style={{ marginTop: "7em" }}>
+              <Route exact path="/activities" component={Dashboard} />
+              <Route path="/activities/:id" component={ActivityDetails} />
+              <Route
+                path={["/createActivity", "/manage/:id"]}
+                component={ActivityForm}
+              />
+            </Container>
+          </>
+        )}
+      ></Route>
     </>
   );
 };
@@ -36,8 +40,4 @@ const mapStateToProps = createStructuredSelector({
   isFetching: selectIsActivityFetching,
 });
 
-const mapDispatchToProps = (dispatch) => ({
-  fetchActivities: () => dispatch(fetchActivitiesStart()),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default connect(mapStateToProps)(App);

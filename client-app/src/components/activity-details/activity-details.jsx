@@ -1,21 +1,38 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { connect } from "react-redux";
+import { Link } from "react-router-dom";
 import { createStructuredSelector } from "reselect";
-import { Card, Image, Button } from "semantic-ui-react";
+import { Card, Image, Button, Dimmer, Loader } from "semantic-ui-react";
 
-import { selectActivity } from "../../redux/activity/activity.actions";
-import { setEditMode } from "../../redux/activity/activity.actions";
+import { fetchActivityStart } from "../../redux/activity/activity.actions";
 
-import { selectedActivity } from "../../redux/activity/activity.selectors";
-import { selectEditMode } from "../../redux/activity/activity.selectors";
+import {
+  selectActivity,
+  selectIsActivityFetching,
+} from "../../redux/activity/activity.selectors";
 
 const ActivityDetails = ({
   activity,
-  setEditMode,
-  editMode,
-  selectActivity,
+  match: {
+    params: { id },
+  },
+  history: { push },
+  fetchActivity,
+  isFetching,
 }) => {
-  return activity && !editMode ? (
+  useEffect(() => {
+    if (!activity || activity.id !== id) fetchActivity(id);
+  }, [fetchActivity, activity, id]);
+
+  if (isFetching) {
+    return (
+      <Dimmer active inverted>
+        <Loader content="Loading activity..." />
+      </Dimmer>
+    );
+  }
+
+  return activity ? (
     <Card fluid>
       <Image
         src={`/assets/categoryImages/${activity.category}.jpg`}
@@ -32,16 +49,17 @@ const ActivityDetails = ({
       <Card.Content extra>
         <Button.Group widths={2}>
           <Button
-            onClick={() => setEditMode(true)}
             basic
             color="blue"
             content="Edit"
+            as={Link}
+            to={`/manage/${activity.id}`}
           />
           <Button
             basic
             color="grey"
             content="Cancel"
-            onClick={() => selectActivity(null)}
+            onClick={() => push("/activities")}
           />
         </Button.Group>
       </Card.Content>
@@ -50,13 +68,12 @@ const ActivityDetails = ({
 };
 
 const mapStateToProps = createStructuredSelector({
-  activity: selectedActivity,
-  editMode: selectEditMode,
+  activity: selectActivity,
+  isFetching: selectIsActivityFetching,
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  setEditMode: (mode) => dispatch(setEditMode(mode)),
-  selectActivity: (activity) => dispatch(selectActivity(activity)),
+  fetchActivity: (id) => dispatch(fetchActivityStart(id)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ActivityDetails);

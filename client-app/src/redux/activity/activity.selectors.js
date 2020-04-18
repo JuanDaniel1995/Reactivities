@@ -1,9 +1,9 @@
 import { createSelector } from "reselect";
 
-const selectActivity = (state) => state.activity;
+const activity = (state) => state.activity;
 
 export const selectActivities = createSelector(
-  [selectActivity],
+  [activity],
   (activity) => activity.activities
 );
 
@@ -14,31 +14,31 @@ export const selectActivitiesByDate = createSelector(
 );
 
 export const selectIsActivityFetching = createSelector(
-  [selectActivity],
+  [activity],
   (activity) => activity.isFetching
 );
 
-export const selectedActivity = createSelector(
-  [selectActivity],
-  (activity) => activity.selectedActivity
+export const selectActivity = createSelector(
+  [activity],
+  (activity) => activity.activity
 );
 
-export const selectedActivityId = createSelector(
-  [selectedActivity],
+export const selectActivityId = createSelector(
+  [selectActivity],
   (activity) => (activity && activity.id) || 0
 );
 
 export const selectEditMode = createSelector(
-  [selectActivity],
+  [activity],
   (activity) => activity.editMode
 );
 
 export const selectSubmitting = createSelector(
-  [selectActivity],
+  [activity],
   (activity) => activity.submitting
 );
 
 export const selectTarget = createSelector(
-  [selectActivity],
+  [activity],
   (activity) => activity.target
 );

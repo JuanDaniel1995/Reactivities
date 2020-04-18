@@ -1,22 +1,40 @@
-import React from "react";
-import { Grid } from "semantic-ui-react";
+import React, { useEffect } from "react";
+import { connect } from "react-redux";
+import { createStructuredSelector } from "reselect";
+import { Grid, Dimmer, Loader } from "semantic-ui-react";
 
 import ActivityList from "../activity-list/activity-list";
-import ActivityDetails from "../activity-details/activity-details";
-import ActivityForm from "../activity-form/activity-form";
 
-const Dashboard = ({ deleteActivity, target }) => {
+import { fetchActivitiesStart } from "../../redux/activity/activity.actions";
+
+import { selectIsActivityFetching } from "../../redux/activity/activity.selectors";
+
+const Dashboard = ({ fetchActivities, isFetching }) => {
+  useEffect(() => {
+    fetchActivities();
+  }, [fetchActivities]);
+  if (isFetching) {
+    return (
+      <Dimmer active inverted>
+        <Loader content="Loading activities..." />
+      </Dimmer>
+    );
+  }
   return (
     <Grid>
       <Grid.Column width={10}>
         <ActivityList />
       </Grid.Column>
-      <Grid.Column width={6}>
-        <ActivityDetails />
-        <ActivityForm />
-      </Grid.Column>
     </Grid>
   );
 };
 
-export default Dashboard;
+const mapStateToProps = createStructuredSelector({
+  isFetching: selectIsActivityFetching,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  fetchActivities: () => dispatch(fetchActivitiesStart()),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);

@@ -1,23 +1,19 @@
 import React from "react";
 import { connect } from "react-redux";
+import { Link } from "react-router-dom";
 import { createStructuredSelector } from "reselect";
 
 import { Item, Button, Label, Segment } from "semantic-ui-react";
 
-import { selectActivity } from "../../redux/activity/activity.actions";
 import { deleteActivityStart } from "../../redux/activity/activity.actions";
 
-import { selectActivitiesByDate } from "../../redux/activity/activity.selectors";
-import { selectSubmitting } from "../../redux/activity/activity.selectors";
-import { selectTarget } from "../../redux/activity/activity.selectors";
+import {
+  selectActivitiesByDate,
+  selectSubmitting,
+  selectTarget,
+} from "../../redux/activity/activity.selectors";
 
-const ActivityList = ({
-  activities,
-  selectActivity,
-  deleteActivity,
-  submitting,
-  target,
-}) => {
+const ActivityList = ({ activities, deleteActivity, submitting, target }) => {
   return (
     <Segment clearing>
       <Item.Group divided>
@@ -34,7 +30,8 @@ const ActivityList = ({
               </Item.Description>
               <Item.Extra>
                 <Button
-                  onClick={() => selectActivity(activity)}
+                  as={Link}
+                  to={`/activities/${activity.id}`}
                   floated="right"
                   content="View"
                   color="blue"
@@ -66,7 +63,6 @@ const mapStateToProps = createStructuredSelector({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  selectActivity: (activity) => dispatch(selectActivity(activity)),
   deleteActivity: (target, id) => dispatch(deleteActivityStart(target, id)),
 });
 

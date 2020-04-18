@@ -3,9 +3,8 @@ import ActivityTypes from "./activity.types";
 const INITIAL_STATE = {
   activities: [],
   isFetching: false,
-  selectedActivity: null,
+  activity: null,
   errorMessage: "",
-  editMode: false,
   submitting: false,
   target: "",
 };
@@ -29,6 +28,24 @@ const activityReducer = (state = INITIAL_STATE, action) => {
         isFetching: false,
         errorMessage: action.payload,
       };
+    case ActivityTypes.FETCH_ACTIVITY_START:
+      return {
+        ...state,
+        isFetching: true,
+      };
+    case ActivityTypes.FETCH_ACTIVITY_SUCCESS:
+      console.log("Fetch activity success");
+      return {
+        ...state,
+        isFetching: false,
+        activity: action.payload,
+      };
+    case ActivityTypes.FETCH_ACTIVITY_FAILURE:
+      return {
+        ...state,
+        isFetching: false,
+        errorMessage: action.payload,
+      };
     case ActivityTypes.CREATE_ACTIVITY_START:
       return {
         ...state,
@@ -38,6 +55,7 @@ const activityReducer = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         submitting: false,
+        activity: action.payload,
         activities: [...state.activities, { ...action.payload }],
       };
     case ActivityTypes.CREATE_ACTIVITY_FAILURE:
@@ -56,6 +74,7 @@ const activityReducer = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         submitting: false,
+        activity: activity,
         activities: [
           ...state.activities.filter((a) => a.id !== activity.id),
           activity,
@@ -73,11 +92,10 @@ const activityReducer = (state = INITIAL_STATE, action) => {
         ...state,
         submitting: true,
         target: target,
-        selectedActivity: null,
+        activity: null,
       };
     case ActivityTypes.DELETE_ACTIVITY_SUCCESS:
       const id = action.payload;
-      console.log(id);
       return {
         ...state,
         submitting: false,
@@ -92,18 +110,23 @@ const activityReducer = (state = INITIAL_STATE, action) => {
     case ActivityTypes.SET_SELECTED_ACTIVITY:
       return {
         ...state,
-        selectedActivity: action.payload,
+        activity: action.payload,
       };
-    case ActivityTypes.SET_EDIT_MODE:
+    case ActivityTypes.CLEAR_ACTIVITY:
+      if (state.activity !== null) {
+        return {
+          ...state,
+          activity: null,
+        };
+      } else {
+        return {
+          ...state,
+        };
+      }
+    case ActivityTypes.SET_FETCHING:
       return {
         ...state,
-        editMode: action.payload,
-      };
-    case ActivityTypes.OPEN_CREATE_FORM:
-      return {
-        ...state,
-        selectedActivity: null,
-        editMode: true,
+        isFetching: action.payload,
       };
     default:
       return state;

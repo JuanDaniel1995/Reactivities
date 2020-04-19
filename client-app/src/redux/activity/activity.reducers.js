@@ -71,6 +71,7 @@ const activityReducer = (state = INITIAL_STATE, action) => {
       };
     case ActivityTypes.EDIT_ACTIVITY_SUCCESS:
       const activity = { ...action.payload };
+      console.log(activity);
       return {
         ...state,
         submitting: false,

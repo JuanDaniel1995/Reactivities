@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 import { Grid, Dimmer, Loader } from "semantic-ui-react";
 
-import ActivityList from "../activity-list/activity-list";
+import ActivityList from "../activityList/activityList";
 
 import { fetchActivitiesStart } from "../../redux/activity/activity.actions";
 

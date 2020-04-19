@@ -1,8 +1,12 @@
 import React, { useEffect } from "react";
 import { connect } from "react-redux";
-import { Link } from "react-router-dom";
 import { createStructuredSelector } from "reselect";
-import { Card, Image, Button, Dimmer, Loader } from "semantic-ui-react";
+import { Dimmer, Loader, Grid } from "semantic-ui-react";
+
+import ActivityHeader from "./activityHeader";
+import ActivityInfo from "./activityInfo";
+import ActivityChat from "./activityChat";
+import ActivitySidebar from "./activitySidebar";
 
 import { fetchActivityStart } from "../../redux/activity/activity.actions";
 
@@ -16,7 +20,6 @@ const ActivityDetails = ({
   match: {
     params: { id },
   },
-  history: { push },
   fetchActivity,
   isFetching,
 }) => {
@@ -33,37 +36,16 @@ const ActivityDetails = ({
   }
 
   return activity ? (
-    <Card fluid>
-      <Image
-        src={`/assets/categoryImages/${activity.category}.jpg`}
-        wrapped
-        ui={false}
-      />
-      <Card.Content>
-        <Card.Header>{activity.title}</Card.Header>
-        <Card.Meta>
-          <span>{activity.date}</span>
-        </Card.Meta>
-        <Card.Description>{activity.description}</Card.Description>
-      </Card.Content>
-      <Card.Content extra>
-        <Button.Group widths={2}>
-          <Button
-            basic
-            color="blue"
-            content="Edit"
-            as={Link}
-            to={`/manage/${activity.id}`}
-          />
-          <Button
-            basic
-            color="grey"
-            content="Cancel"
-            onClick={() => push("/activities")}
-          />
-        </Button.Group>
-      </Card.Content>
-    </Card>
+    <Grid>
+      <Grid.Column width={10}>
+        <ActivityHeader activity={activity} />
+        <ActivityInfo activity={activity} />
+        <ActivityChat />
+      </Grid.Column>
+      <Grid.Column width={6}>
+        <ActivitySidebar />
+      </Grid.Column>
+    </Grid>
   ) : null;
 };
 

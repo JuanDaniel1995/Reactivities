@@ -1,11 +1,8 @@
 import React from "react";
-import { connect } from "react-redux";
 import { NavLink } from "react-router-dom";
 import { Menu, Container, Button } from "semantic-ui-react";
 
-import { openCreateForm } from "../../redux/activity/activity.actions";
-
-const Header = ({ openCreateForm }) => {
+const Header = () => {
   return (
     <Menu fixed="top" inverted>
       <Container>
@@ -31,8 +28,4 @@ const Header = ({ openCreateForm }) => {
   );
 };
 
-const mapDispatchToProps = (dispatch) => ({
-  openCreateForm: () => dispatch(openCreateForm()),
-});
-
-export default connect(null, mapDispatchToProps)(Header);
+export default Header;

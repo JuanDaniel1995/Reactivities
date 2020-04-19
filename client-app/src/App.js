@@ -9,8 +9,8 @@ import { selectIsActivityFetching } from "./redux/activity/activity.selectors";
 import Header from "./components/header/header";
 import Dashboard from "./components/dashboard/dashboard";
 import HomePage from "./pages/home/home";
-import ActivityForm from "./components/activity-form/activity-form";
-import ActivityDetails from "./components/activity-details/activity-details";
+import ActivityForm from "./components/activityForm/activityForm";
+import ActivityDetails from "./components/activityDetails/activityDetails";
 
 const App = () => {
   return (

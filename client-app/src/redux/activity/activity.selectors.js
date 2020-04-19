@@ -13,6 +13,20 @@ export const selectActivitiesByDate = createSelector(
     activities.sort((a, b) => Date.parse(a.date) - Date.parse(b.date))
 );
 
+export const selectActivitiesGroupedByDate = createSelector(
+  [selectActivities],
+  (activities) =>
+    Object.entries(
+      activities.reduce((activities, activity) => {
+        const date = activity.date.split("T")[0];
+        activities[date] = activities[date]
+          ? [...activities[date], activity]
+          : [activity];
+        return activities;
+      }, {})
+    )
+);
+
 export const selectIsActivityFetching = createSelector(
   [activity],
   (activity) => activity.isFetching

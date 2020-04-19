@@ -60,6 +60,7 @@ export function* postCreateActivity({ meta: { callback } }) {
 }
 export function* postEditActivity({ meta: { callback } }) {
   try {
+    console.log(callback);
     yield put(callback());
   } catch (error) {
     yield put(createActivityFailure(error.message));
@@ -122,6 +123,7 @@ export function* activitySagas() {
     call(createActivityStart),
     call(createActivityFinished),
     call(editActivityStart),
+    call(editActivityFinished),
     call(deleteActivityStart),
   ]);
 }

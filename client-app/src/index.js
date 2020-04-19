@@ -6,7 +6,7 @@ import { Provider } from "react-redux";
 import * as serviceWorker from "./serviceWorker";
 
 import App from "./App";
-import ScrollToTop from "./components/scroll-to-top/scroll-to-top";
+import ScrollToTop from "./components/scrollToTop/scrollToTop";
 import { store } from "./redux/store";
 
 import "./styles.css";

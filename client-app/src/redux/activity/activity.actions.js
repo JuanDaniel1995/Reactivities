@@ -7,61 +7,61 @@ export const fetchActivitiesSuccess = (activities) => ({
   type: ActivityTypes.FETCH_ACTIVITIES_SUCCESS,
   payload: activities,
 });
-export const fetchActivitiesFailure = (errorMessage) => ({
+export const fetchActivitiesFailure = () => ({
   type: ActivityTypes.FETCH_ACTIVITIES_FAILURE,
-  payload: errorMessage,
 });
-export const fetchActivityStart = (id) => ({
+export const fetchActivityStart = (id, callback) => ({
   type: ActivityTypes.FETCH_ACTIVITY_START,
   payload: id,
+  meta: {
+    callback: callback,
+  },
 });
 export const fetchActivitySuccess = (activity) => ({
   type: ActivityTypes.FETCH_ACTIVITY_SUCCESS,
   payload: activity,
 });
-export const fetchActivityFailure = (errorMessage) => ({
+export const fetchActivityFailure = () => ({
   type: ActivityTypes.FETCH_ACTIVITY_FAILURE,
-  payload: errorMessage,
 });
-export const createActivityStart = (activity, callback) => ({
+export const createActivityStart = (activity, onSuccess, onError) => ({
   type: ActivityTypes.CREATE_ACTIVITY_START,
   payload: activity,
   meta: {
-    callback: callback,
+    onSuccess,
+    onError,
   },
 });
-export const createActivitySuccess = (activity, callback) => ({
+export const createActivitySuccess = (activity) => ({
   type: ActivityTypes.CREATE_ACTIVITY_SUCCESS,
   payload: activity,
-  meta: {
-    callback: callback,
-  },
 });
 export const createActivityFailure = (errorMessage) => ({
   type: ActivityTypes.CREATE_ACTIVITY_FAILURE,
   payload: errorMessage,
 });
-export const editActivityStart = (activity, callback) => ({
+export const editActivityStart = (activity, onSuccess, onError) => ({
   type: ActivityTypes.EDIT_ACTIVITY_START,
   payload: activity,
   meta: {
-    callback: callback,
+    onSuccess,
+    onError,
   },
 });
-export const editActivitySuccess = (activity, callback) => ({
+export const editActivitySuccess = (activity) => ({
   type: ActivityTypes.EDIT_ACTIVITY_SUCCESS,
   payload: activity,
-  meta: {
-    callback: callback,
-  },
 });
 export const editActivityFailure = (errorMessage) => ({
   type: ActivityTypes.EDIT_ACTIVITY_FAILURE,
   payload: errorMessage,
 });
-export const deleteActivityStart = (target, id) => ({
+export const deleteActivityStart = (target, id, onError) => ({
   type: ActivityTypes.DELETE_ACTIVITY_START,
   payload: { target, id },
+  meta: {
+    onError,
+  },
 });
 export const deleteActivitySuccess = (id) => ({
   type: ActivityTypes.DELETE_ACTIVITY_SUCCESS,
@@ -75,9 +75,6 @@ export const setActivity = (activity) => ({
   type: ActivityTypes.SET_SELECTED_ACTIVITY,
   payload: activity,
 });
-export const clearActivity = () => ({
-  type: ActivityTypes.CLEAR_ACTIVITY,
-});
 export const setSubmitting = (submitting) => ({
   type: ActivityTypes.SET_SUBMITTING,
   payload: submitting,
@@ -85,7 +82,4 @@ export const setSubmitting = (submitting) => ({
 export const setFetching = (fetching) => ({
   type: ActivityTypes.SET_FETCHING,
   payload: fetching,
-});
-export const openCreateForm = () => ({
-  type: ActivityTypes.OPEN_CREATE_FORM,
 });

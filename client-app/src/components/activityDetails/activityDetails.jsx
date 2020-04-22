@@ -1,7 +1,8 @@
 import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
-import { Dimmer, Loader, Grid } from "semantic-ui-react";
+import { Responsive, Dimmer, Loader, Grid } from "semantic-ui-react";
+import { toast } from "react-toastify";
 
 import ActivityHeader from "./activityHeader";
 import ActivityInfo from "./activityInfo";
@@ -20,12 +21,16 @@ const ActivityDetails = ({
   match: {
     params: { id },
   },
+  history: { push },
   fetchActivity,
   isFetching,
 }) => {
   useEffect(() => {
-    if (!activity || activity.id !== id) fetchActivity(id);
-  }, [fetchActivity, activity, id]);
+    if (!activity || activity.id !== id)
+      fetchActivity(id, (route = undefined, message = undefined) => {
+        route ? push(route) : toast.error(message);
+      });
+  }, [fetchActivity, push, activity, id]);
 
   if (isFetching) {
     return (
@@ -37,14 +42,22 @@ const ActivityDetails = ({
 
   return activity ? (
     <Grid>
-      <Grid.Column width={10}>
+      <Responsive as={Grid.Column} width={16} {...Responsive.onlyMobile}>
         <ActivityHeader activity={activity} />
         <ActivityInfo activity={activity} />
         <ActivityChat />
-      </Grid.Column>
-      <Grid.Column width={6}>
+      </Responsive>
+      <Responsive as={Grid.Column} width={16} {...Responsive.onlyMobile}>
         <ActivitySidebar />
-      </Grid.Column>
+      </Responsive>
+      <Responsive as={Grid.Column} width={10} {...Responsive.onlyComputer}>
+        <ActivityHeader activity={activity} />
+        <ActivityInfo activity={activity} />
+        <ActivityChat />
+      </Responsive>
+      <Responsive as={Grid.Column} width={6} {...Responsive.onlyComputer}>
+        <ActivitySidebar />
+      </Responsive>
     </Grid>
   ) : null;
 };
@@ -55,7 +68,7 @@ const mapStateToProps = createStructuredSelector({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  fetchActivity: (id) => dispatch(fetchActivityStart(id)),
+  fetchActivity: (id, callback) => dispatch(fetchActivityStart(id, callback)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ActivityDetails);

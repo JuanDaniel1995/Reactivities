@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
-import { Grid, Dimmer, Loader } from "semantic-ui-react";
+import { Responsive, Grid, Dimmer, Loader } from "semantic-ui-react";
 
 import ActivityList from "../activityList/activityList";
 
@@ -22,9 +22,12 @@ const Dashboard = ({ fetchActivities, isFetching }) => {
   }
   return (
     <Grid>
-      <Grid.Column width={10}>
+      <Responsive as={Grid.Column} width={16} {...Responsive.onlyMobile}>
         <ActivityList />
-      </Grid.Column>
+      </Responsive>
+      <Responsive as={Grid.Column} width={10} {...Responsive.onlyComputer}>
+        <ActivityList />
+      </Responsive>
     </Grid>
   );
 };

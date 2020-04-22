@@ -26,7 +26,6 @@ const activityReducer = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         isFetching: false,
-        errorMessage: action.payload,
       };
     case ActivityTypes.FETCH_ACTIVITY_START:
       return {
@@ -44,7 +43,6 @@ const activityReducer = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         isFetching: false,
-        errorMessage: action.payload,
       };
     case ActivityTypes.CREATE_ACTIVITY_START:
       return {
@@ -71,7 +69,6 @@ const activityReducer = (state = INITIAL_STATE, action) => {
       };
     case ActivityTypes.EDIT_ACTIVITY_SUCCESS:
       const activity = { ...action.payload };
-      console.log(activity);
       return {
         ...state,
         submitting: false,

@@ -9,6 +9,7 @@ import App from "./App";
 import ScrollToTop from "./components/scrollToTop/scrollToTop";
 import { store } from "./redux/store";
 
+import "react-toastify/dist/ReactToastify.min.css";
 import "./styles.css";
 
 ReactDOM.render(

@@ -31,60 +31,86 @@ export function* fetchActivitiesAsync() {
   }
 }
 
-export function* fetchActivityAsync({ payload: id }) {
+export function* fetchActivityAsync({ payload: id, meta: { callback } }) {
   try {
     const activity = yield agent.Activities.details(id);
     activity.date = activity.date.split(".")[0];
     yield put(fetchActivitySuccess(activity));
   } catch (error) {
-    yield put(fetchActivityFailure(error.message));
+    yield put(fetchActivityFailure());
+    if (error.message === "Network Error" && !error.response)
+      yield callback(undefined, "Make sure you are connected to the network");
+    else {
+      const {
+        response: { status },
+      } = error;
+      status === 404
+        ? yield callback("/notfound")
+        : yield callback(undefined, "Error fetching activity");
+    }
   }
 }
 
-export function* createActivityAsync({ payload, meta: { callback } }) {
+export function* createActivityAsync({
+  payload,
+  meta: { onSuccess, onError },
+}) {
   try {
     yield agent.Activities.create(payload);
     yield put(setSubmitting(false));
-    yield put(createActivitySuccess(payload, callback));
+    yield put(createActivitySuccess(payload));
+    yield onSuccess(payload.id);
   } catch (error) {
-    yield put(createActivityFailure(error.message));
+    yield put(createActivityFailure());
+    if (error.message === "Network Error" && !error.response)
+      yield onError(undefined, "Make sure you are connected to the network");
+    else {
+      const {
+        response: { status },
+      } = error;
+      status === 404
+        ? yield onError("/notfound")
+        : yield onError(undefined, "Error creating activity");
+    }
   }
 }
 
-export function* postCreateActivity({ meta: { callback } }) {
-  try {
-    yield put(callback());
-  } catch (error) {
-    yield put(createActivityFailure(error.message));
-  }
-}
-export function* postEditActivity({ meta: { callback } }) {
-  try {
-    console.log(callback);
-    yield put(callback());
-  } catch (error) {
-    yield put(createActivityFailure(error.message));
-  }
-}
-
-export function* editActivityAsync({ payload, meta: { callback } }) {
+export function* editActivityAsync({ payload, meta: { onSuccess, onError } }) {
   try {
     yield agent.Activities.update(payload);
     yield put(setActivity(payload));
     yield put(setSubmitting(false));
-    yield put(editActivitySuccess(payload, callback));
+    yield put(editActivitySuccess(payload));
+    yield onSuccess(payload.id);
   } catch (error) {
-    yield put(editActivityFailure(error.message));
+    yield put(editActivityFailure());
+    if (error.message === "Network Error" && !error.response)
+      yield onError(undefined, "Make sure you are connected to the network");
+    else {
+      const {
+        response: { status },
+      } = error;
+      status === 404
+        ? yield onError("/notfound")
+        : yield onError(undefined, "Error editing activity");
+    }
   }
 }
 
-export function* deleteActivityAsync({ payload: { id } }) {
+export function* deleteActivityAsync({
+  payload: { id },
+  meta: { onError },
+}) {
   try {
     yield agent.Activities.delete(id);
     yield put(setSubmitting(false));
     yield put(deleteActivitySuccess(id));
   } catch (error) {
-    yield put(deleteActivityFailure(error.message));
+    if (error.message === "Network Error" && !error.response)
+      yield onError(undefined, "Make sure you are connected to the network");
+    else {
+      yield put(deleteActivityFailure(error.message));
+    }
   }
 }
 
@@ -100,16 +126,8 @@ export function* createActivityStart() {
   yield takeLatest(ActivityTypes.CREATE_ACTIVITY_START, createActivityAsync);
 }
 
-export function* createActivityFinished() {
-  yield takeLatest(ActivityTypes.CREATE_ACTIVITY_SUCCESS, postCreateActivity);
-}
-
 export function* editActivityStart() {
   yield takeLatest(ActivityTypes.EDIT_ACTIVITY_START, editActivityAsync);
-}
-
-export function* editActivityFinished() {
-  yield takeLatest(ActivityTypes.EDIT_ACTIVITY_SUCCESS, postEditActivity);
 }
 
 export function* deleteActivityStart() {
@@ -121,9 +139,7 @@ export function* activitySagas() {
     call(fetchActivitiesStart),
     call(fetchActivityStart),
     call(createActivityStart),
-    call(createActivityFinished),
     call(editActivityStart),
-    call(editActivityFinished),
     call(deleteActivityStart),
   ]);
 }

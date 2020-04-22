@@ -1,13 +1,12 @@
 import axios from "axios";
 
-axios.defaults.baseURL = "http://localhost:5000/api";
+axios.defaults.baseURL = "http://192.168.1.6:5000/api";
 
 const responseBody = async (response) => await response.data;
 
 const requests = {
   get: async (url) => await axios.get(url).then(responseBody),
-  post: async (url, body) =>
-    await axios.post(url, body).then(responseBody).then(console.log("Created")),
+  post: async (url, body) => await axios.post(url, body).then(responseBody),
   put: async (url, body) => await axios.put(url, body).then(responseBody),
   del: async (url) => await axios.delete(url).then(responseBody),
 };

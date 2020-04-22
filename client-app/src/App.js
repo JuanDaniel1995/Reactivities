@@ -1,8 +1,9 @@
 import React from "react";
 import { connect } from "react-redux";
-import { Route } from "react-router-dom";
+import { Route, Switch } from "react-router-dom";
 import { createStructuredSelector } from "reselect";
 import { Container } from "semantic-ui-react";
+import { ToastContainer } from "react-toastify";
 
 import { selectIsActivityFetching } from "./redux/activity/activity.selectors";
 
@@ -11,10 +12,12 @@ import Dashboard from "./components/dashboard/dashboard";
 import HomePage from "./pages/home/home";
 import ActivityForm from "./components/activityForm/activityForm";
 import ActivityDetails from "./components/activityDetails/activityDetails";
+import NotFound from "./pages/errors/notFound";
 
 const App = () => {
   return (
     <>
+      <ToastContainer position="bottom-right" />
       <Route exact path="/" component={HomePage} />
       <Route
         path={"/(.+)"}
@@ -22,12 +25,15 @@ const App = () => {
           <>
             <Header />
             <Container style={{ marginTop: "7em" }}>
-              <Route exact path="/activities" component={Dashboard} />
-              <Route path="/activities/:id" component={ActivityDetails} />
-              <Route
-                path={["/createActivity", "/manage/:id"]}
-                component={ActivityForm}
-              />
+              <Switch>
+                <Route exact path="/activities" component={Dashboard} />
+                <Route path="/activities/:id" component={ActivityDetails} />
+                <Route
+                  path={["/createActivity", "/manage/:id"]}
+                  component={ActivityForm}
+                />
+                <Route component={NotFound} />
+              </Switch>
             </Container>
           </>
         )}

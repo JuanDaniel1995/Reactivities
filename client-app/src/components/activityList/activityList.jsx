@@ -2,7 +2,7 @@ import React, { Fragment } from "react";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 
-import { Item, Label } from "semantic-ui-react";
+import { Responsive, Item, Label } from "semantic-ui-react";
 
 import Activity from "../activity/activity";
 
@@ -13,9 +13,22 @@ const ActivityList = ({ activities }) => {
     <>
       {activities.map(([group, activityGroup]) => (
         <Fragment key={group}>
-          <Label size="large" color="blue">
+          <Responsive
+            as={Label}
+            size="huge"
+            color="blue"
+            {...Responsive.onlyMobile}
+          >
             {group}
-          </Label>
+          </Responsive>
+          <Responsive
+            as={Label}
+            size="large"
+            color="blue"
+            {...Responsive.onlyComputer}
+          >
+            {group}
+          </Responsive>
           <Item.Group divided>
             {activityGroup.map((activity) => (
               <Activity key={activity.id} activity={activity} />

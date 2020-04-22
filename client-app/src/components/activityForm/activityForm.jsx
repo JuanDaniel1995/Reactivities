@@ -3,12 +3,12 @@ import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 import { Form, Button, Segment, Dimmer, Loader, Grid } from "semantic-ui-react";
 import { v4 as uuid } from "uuid";
+import { toast } from "react-toastify";
 
 import {
   fetchActivityStart,
   createActivityStart,
   editActivityStart,
-  setFetching,
 } from "../../redux/activity/activity.actions";
 
 import {
@@ -30,7 +30,6 @@ const ActivityForm = ({
   },
   history: { push },
   isFetching,
-  setFetching,
 }) => {
   const [activity, setActivity] = useState(
     initialFormState && id
@@ -48,9 +47,11 @@ const ActivityForm = ({
 
   useEffect(() => {
     if (id && (!initialFormState || initialFormState.id !== id)) {
-      fetchActivity(id);
+      fetchActivity(id, (route = undefined, message = undefined) => {
+        route ? push(route) : toast.error(message);
+      });
     }
-  }, [fetchActivity, initialFormState, id]);
+  }, [fetchActivity, push, initialFormState, id]);
 
   const handleSubmit = () => {
     if (activity.id.length === 0) {
@@ -58,10 +59,14 @@ const ActivityForm = ({
         ...activity,
         id: uuid(),
       };
-      createActivity(newActivity, () => redirectToActivity(newActivity.id));
+      createActivity(newActivity, redirectToActivity, showError);
     } else {
-      editActivity(activity, () => redirectToActivity(activity.id));
+      editActivity(activity, redirectToActivity, showError);
     }
+  };
+
+  const showError = (route = undefined, message = undefined) => {
+    route ? push(route) : toast.error(message);
   };
 
   const redirectToActivity = (id) => {
@@ -156,11 +161,10 @@ const mapStateToProps = createStructuredSelector({
 
 const mapDispatchToProps = (dispatch) => ({
   fetchActivity: (id) => dispatch(fetchActivityStart(id)),
-  createActivity: (activity, callback) =>
-    dispatch(createActivityStart(activity, callback)),
-  editActivity: (activity, callback) =>
-    dispatch(editActivityStart(activity, callback)),
-  setFetching: (fetching) => dispatch(setFetching(fetching)),
+  createActivity: (activity, onSuccess, onError) =>
+    dispatch(createActivityStart(activity, onSuccess, onError)),
+  editActivity: (activity, onSuccess, onError) =>
+    dispatch(editActivityStart(activity, onSuccess, onError)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ActivityForm);

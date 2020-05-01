@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
-import { Responsive, Grid, Dimmer, Loader } from "semantic-ui-react";
+import { Grid, Dimmer, Loader } from "semantic-ui-react";
 
 import ActivityList from "../activityList/activityList";
 
@@ -11,6 +11,7 @@ import { selectIsActivityFetching } from "../../redux/activity/activity.selector
 
 const Dashboard = ({ fetchActivities, isFetching }) => {
   useEffect(() => {
+    console.log("Hola")
     fetchActivities();
   }, [fetchActivities]);
   if (isFetching) {
@@ -22,12 +23,9 @@ const Dashboard = ({ fetchActivities, isFetching }) => {
   }
   return (
     <Grid>
-      <Responsive as={Grid.Column} width={16} {...Responsive.onlyMobile}>
+      <Grid.Column width={10}>
         <ActivityList />
-      </Responsive>
-      <Responsive as={Grid.Column} width={10} {...Responsive.onlyComputer}>
-        <ActivityList />
-      </Responsive>
+      </Grid.Column>
     </Grid>
   );
 };

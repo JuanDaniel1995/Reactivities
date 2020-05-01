@@ -1,13 +1,12 @@
 import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
-import { Responsive, Dimmer, Loader, Grid } from "semantic-ui-react";
+import { Dimmer, Loader, Grid } from "semantic-ui-react";
 import { toast } from "react-toastify";
 
 import ActivityHeader from "./activityHeader";
 import ActivityInfo from "./activityInfo";
 import ActivityChat from "./activityChat";
-import ActivitySidebar from "./activitySidebar";
 
 import { fetchActivityStart } from "../../redux/activity/activity.actions";
 
@@ -42,22 +41,11 @@ const ActivityDetails = ({
 
   return activity ? (
     <Grid>
-      <Responsive as={Grid.Column} width={16} {...Responsive.onlyMobile}>
+      <Grid.Column width={10}>
         <ActivityHeader activity={activity} />
         <ActivityInfo activity={activity} />
         <ActivityChat />
-      </Responsive>
-      <Responsive as={Grid.Column} width={16} {...Responsive.onlyMobile}>
-        <ActivitySidebar />
-      </Responsive>
-      <Responsive as={Grid.Column} width={10} {...Responsive.onlyComputer}>
-        <ActivityHeader activity={activity} />
-        <ActivityInfo activity={activity} />
-        <ActivityChat />
-      </Responsive>
-      <Responsive as={Grid.Column} width={6} {...Responsive.onlyComputer}>
-        <ActivitySidebar />
-      </Responsive>
+      </Grid.Column>
     </Grid>
   ) : null;
 };

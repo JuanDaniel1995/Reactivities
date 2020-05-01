@@ -14,7 +14,6 @@ import {
   fetchActivitySuccess,
   fetchActivityFailure,
   setSubmitting,
-  setActivity,
 } from "./activity.actions";
 
 import ActivityTypes from "./activity.types";
@@ -23,7 +22,7 @@ export function* fetchActivitiesAsync() {
   try {
     const activities = yield agent.Activities.list();
     activities.forEach((activity) => {
-      activity.date = activity.date.split(".")[0];
+      activity.date = new Date(activity.date);
     });
     yield put(fetchActivitiesSuccess(activities));
   } catch (error) {
@@ -34,7 +33,8 @@ export function* fetchActivitiesAsync() {
 export function* fetchActivityAsync({ payload: id, meta: { callback } }) {
   try {
     const activity = yield agent.Activities.details(id);
-    activity.date = activity.date.split(".")[0];
+    activity.date = new Date(activity.date);
+    activity.time = new Date(activity.date);
     yield put(fetchActivitySuccess(activity));
   } catch (error) {
     yield put(fetchActivityFailure());
@@ -58,7 +58,13 @@ export function* createActivityAsync({
   try {
     yield agent.Activities.create(payload);
     yield put(setSubmitting(false));
-    yield put(createActivitySuccess(payload));
+    yield put(
+      createActivitySuccess({
+        ...payload,
+        date: new Date(payload.date),
+        time: new Date(payload.date),
+      })
+    );
     yield onSuccess(payload.id);
   } catch (error) {
     yield put(createActivityFailure());
@@ -78,9 +84,14 @@ export function* createActivityAsync({
 export function* editActivityAsync({ payload, meta: { onSuccess, onError } }) {
   try {
     yield agent.Activities.update(payload);
-    yield put(setActivity(payload));
     yield put(setSubmitting(false));
-    yield put(editActivitySuccess(payload));
+    yield put(
+      editActivitySuccess({
+        ...payload,
+        date: new Date(payload.date),
+        time: new Date(payload.date),
+      })
+    );
     yield onSuccess(payload.id);
   } catch (error) {
     yield put(editActivityFailure());
@@ -97,10 +108,7 @@ export function* editActivityAsync({ payload, meta: { onSuccess, onError } }) {
   }
 }
 
-export function* deleteActivityAsync({
-  payload: { id },
-  meta: { onError },
-}) {
+export function* deleteActivityAsync({ payload: { id }, meta: { onError } }) {
   try {
     yield agent.Activities.delete(id);
     yield put(setSubmitting(false));

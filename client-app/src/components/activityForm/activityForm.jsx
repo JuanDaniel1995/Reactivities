@@ -4,6 +4,16 @@ import { createStructuredSelector } from "reselect";
 import { Form, Button, Segment, Dimmer, Loader, Grid } from "semantic-ui-react";
 import { v4 as uuid } from "uuid";
 import { toast } from "react-toastify";
+import { Form as FinalForm, Field } from "react-final-form";
+import { format } from "date-fns";
+
+import TextInput from "../textInput/textInput";
+import TextAreaInput from "../textAreaInput/textAreaInput";
+import DateInput from "../dateInput/dateInput";
+import SelectInput from "../selectInput/selectInput";
+import { category } from "../selectInput/categoryOptions";
+
+import { combineDateAndTime } from "../../util/util";
 
 import {
   fetchActivityStart,
@@ -35,11 +45,12 @@ const ActivityForm = ({
     initialFormState && id
       ? initialFormState
       : {
-          id: "",
+          id: undefined,
           title: "",
           category: "",
           description: "",
-          date: "",
+          date: undefined,
+          time: undefined,
           city: "",
           venue: "",
         }
@@ -51,10 +62,26 @@ const ActivityForm = ({
         route ? push(route) : toast.error(message);
       });
     }
-  }, [fetchActivity, push, initialFormState, id]);
+    return () => {
+      if (id)
+        setActivity({
+          id: undefined,
+          title: "",
+          category: "",
+          description: "",
+          date: undefined,
+          time: undefined,
+          city: "",
+          venue: "",
+        });
+    };
+  }, [fetchActivity, initialFormState, push, id]);
 
-  const handleSubmit = () => {
-    if (activity.id.length === 0) {
+  const handleFinalFormSubmit = (values) => {
+    const dateAndTime = combineDateAndTime(values.date, values.time);
+    const { date, time, ...activity } = values;
+    activity.date = format(dateAndTime, "YYYY-MM-dd'T'HH:mm:ss.SSS");
+    if (!activity.id) {
       let newActivity = {
         ...activity,
         id: uuid(),
@@ -73,11 +100,6 @@ const ActivityForm = ({
     push(`/activities/${id}`);
   };
 
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setActivity({ ...activity, [name]: value });
-  };
-
   if (isFetching) {
     return (
       <Dimmer active inverted>
@@ -90,61 +112,78 @@ const ActivityForm = ({
     <Grid>
       <Grid.Column width={10}>
         <Segment clearing>
-          <Form onSubmit={handleSubmit}>
-            <Form.Input
-              onChange={handleInputChange}
-              name="title"
-              placeholder="Title"
-              value={activity && activity.title}
-            />
-            <Form.TextArea
-              onChange={handleInputChange}
-              name="description"
-              row={2}
-              placeholder="Description"
-              value={activity && activity.description}
-            />
-            <Form.Input
-              onChange={handleInputChange}
-              name="category"
-              placeholder="Category"
-              value={activity && activity.category}
-            />
-            <Form.Input
-              onChange={handleInputChange}
-              name="date"
-              type="datetime-local"
-              placeholder="Date"
-              value={activity && activity.date}
-            />
-            <Form.Input
-              onChange={handleInputChange}
-              name="city"
-              placeholder="City"
-              value={activity && activity.city}
-            />
-            <Form.Input
-              onChange={handleInputChange}
-              name="venue"
-              placeholder="Venue"
-              value={activity && activity.venue}
-            />
-            <Button
-              loading={submitting}
-              floated="right"
-              positive
-              type="submit"
-              content="Submit"
-            />
-            <Button
-              floated="right"
-              type="button"
-              content="Cancel"
-              onClick={() =>
-                id ? redirectToActivity(id) : push("/activities")
-              }
-            />
-          </Form>
+          <FinalForm
+            initialValues={activity}
+            onSubmit={handleFinalFormSubmit}
+            render={({ handleSubmit }) => (
+              <Form onSubmit={handleSubmit}>
+                <Field
+                  name="title"
+                  placeholder="Title"
+                  value={activity.title}
+                  component={TextInput}
+                />
+                <Field
+                  name="description"
+                  placeholder="Description"
+                  rows={3}
+                  value={activity.description}
+                  component={TextAreaInput}
+                />
+                <Field
+                  component={SelectInput}
+                  options={category}
+                  name="category"
+                  placeholder="Category"
+                  value={activity.category}
+                />
+                <Form.Group widths="equal">
+                  <Field
+                    component={DateInput}
+                    name="date"
+                    date={true}
+                    placeholder="Date"
+                    value={activity.date}
+                  />
+                  <Field
+                    component={DateInput}
+                    name="time"
+                    time={true}
+                    placeholder="Time"
+                    value={activity.time}
+                  />
+                </Form.Group>
+
+                <Field
+                  component={TextInput}
+                  name="city"
+                  placeholder="City"
+                  value={activity.city}
+                />
+                <Field
+                  component={TextInput}
+                  name="venue"
+                  placeholder="Venue"
+                  value={activity.venue}
+                />
+                <Button
+                  loading={submitting}
+                  floated="right"
+                  positive
+                  type="submit"
+                  content="Submit"
+                />
+                <Button
+                  floated="right"
+                  type="button"
+                  content="Cancel"
+                  onClick={() =>
+                    id ? redirectToActivity(id) : push("/activities")
+                  }
+                />
+              </Form>
+            )}
+          />
         </Segment>
       </Grid.Column>
     </Grid>

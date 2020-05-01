@@ -2,33 +2,21 @@ import React, { Fragment } from "react";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 
-import { Responsive, Item, Label } from "semantic-ui-react";
+import { Item, Label } from "semantic-ui-react";
 
 import Activity from "../activity/activity";
 
 import { selectActivitiesGroupedByDate } from "../../redux/activity/activity.selectors";
 
 const ActivityList = ({ activities }) => {
+  if (!activities) return <h1>No activities found</h1>;
   return (
     <>
       {activities.map(([group, activityGroup]) => (
         <Fragment key={group}>
-          <Responsive
-            as={Label}
-            size="huge"
-            color="blue"
-            {...Responsive.onlyMobile}
-          >
+          <Label size="large" color="blue">
             {group}
-          </Responsive>
-          <Responsive
-            as={Label}
-            size="large"
-            color="blue"
-            {...Responsive.onlyComputer}
-          >
-            {group}
-          </Responsive>
+          </Label>
           <Item.Group divided>
             {activityGroup.map((activity) => (
               <Activity key={activity.id} activity={activity} />

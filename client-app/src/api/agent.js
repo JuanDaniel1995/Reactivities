@@ -1,6 +1,6 @@
 import axios from "axios";
 
-axios.defaults.baseURL = "http://192.168.1.6:5000/api";
+axios.defaults.baseURL = "http://192.168.1.7:5000/api";
 
 const responseBody = async (response) => await response.data;
 

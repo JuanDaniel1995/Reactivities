@@ -6,6 +6,12 @@ import { v4 as uuid } from "uuid";
 import { toast } from "react-toastify";
 import { Form as FinalForm, Field } from "react-final-form";
 import { format } from "date-fns";
+import {
+  combineValidators,
+  isRequired,
+  composeValidators,
+  hasLengthGreaterThan,
+} from "revalidate";
 
 import TextInput from "../textInput/textInput";
 import TextAreaInput from "../textAreaInput/textAreaInput";
@@ -28,6 +34,21 @@ import {
   selectSubmitting,
   selectIsActivityFetching,
 } from "../../redux/activity/activity.selectors";
+
+const validate = combineValidators({
+  title: isRequired({ message: "The event title is required" }),
+  category: isRequired("Category"),
+  description: composeValidators(
+    isRequired("Description"),
+    hasLengthGreaterThan(4)({
+      message: "Description needs to be at least 5 characters",
+    })
+  )(),
+  city: isRequired("City"),
+  venue: isRequired("Venue"),
+  date: isRequired("Date"),
+  time: isRequired("Time"),
+});
 
 const ActivityForm = ({
   activity: initialFormState,
@@ -113,9 +134,10 @@ const ActivityForm = ({
       <Grid.Column width={10}>
         <Segment clearing>
           <FinalForm
+            validate={validate}
             initialValues={activity}
             onSubmit={handleFinalFormSubmit}
-            render={({ handleSubmit }) => (
+            render={({ handleSubmit, invalid, pristine }) => (
               <Form onSubmit={handleSubmit}>
                 <Field
                   name="title"
@@ -168,6 +190,7 @@ const ActivityForm = ({
                 />
                 <Button
                   loading={submitting}
+                  disabled={invalid || pristine}
                   floated="right"
                   positive
                   type="submit"

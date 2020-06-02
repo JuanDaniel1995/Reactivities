@@ -1,6 +1,7 @@
 import React, { Fragment } from "react";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
+import { format } from "date-fns";
 
 import { Item, Label } from "semantic-ui-react";
 
@@ -15,7 +16,7 @@ const ActivityList = ({ activities }) => {
       {activities.map(([group, activityGroup]) => (
         <Fragment key={group}>
           <Label size="large" color="blue">
-            {group}
+            {format(group, "eeee do MMMM")}
           </Label>
           <Item.Group divided>
             {activityGroup.map((activity) => (

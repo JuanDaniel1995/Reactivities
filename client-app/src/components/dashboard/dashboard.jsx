@@ -11,7 +11,6 @@ import { selectIsActivityFetching } from "../../redux/activity/activity.selector
 
 const Dashboard = ({ fetchActivities, isFetching }) => {
   useEffect(() => {
-    console.log("Hola")
     fetchActivities();
   }, [fetchActivities]);
   if (isFetching) {

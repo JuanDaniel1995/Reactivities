@@ -27,6 +27,8 @@ import {
   editActivityStart,
 } from "../../redux/activity/activity.actions";
 
+import { selectUser } from "../../redux/user/user.selectors";
+
 import {
   selectActivity,
   selectActivityId,
@@ -52,6 +54,7 @@ const validate = combineValidators({
 
 const ActivityForm = ({
   activity: initialFormState,
+  user,
   fetchActivity,
   createActivity,
   editActivity,
@@ -101,7 +104,9 @@ const ActivityForm = ({
   const handleFinalFormSubmit = (values) => {
     const dateAndTime = combineDateAndTime(values.date, values.time);
     const { date, time, ...activity } = values;
+    const { token, ...attendee } = user;
     activity.date = format(dateAndTime, "YYYY-MM-dd'T'HH:mm:ss.SSS");
+    activity.attendees = [{ ...attendee, isHost: true }];
     if (!activity.id) {
       let newActivity = {
         ...activity,
@@ -215,6 +220,7 @@ const ActivityForm = ({
 
 const mapStateToProps = createStructuredSelector({
   activity: selectActivity,
+  user: selectUser,
   editMode: selectEditMode,
   key: selectActivityId,
   submitting: selectSubmitting,

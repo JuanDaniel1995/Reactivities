@@ -1,9 +1,19 @@
 import React from "react";
-import { Item, Button, Segment, Icon } from "semantic-ui-react";
+import { connect } from "react-redux";
+import { createStructuredSelector } from "reselect";
+import { Item, Button, Segment, Icon, Label } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 import { format } from "date-fns";
 
-const Activity = ({ activity }) => {
+import ActivityAttendees from "../activityAttendees/activityAttendees";
+
+import { selectUser } from "../../redux/user/user.selectors";
+
+const Activity = ({ activity, user }) => {
+  const host = activity.attendees.find((a) => a.isHost);
+  const attendee = activity.attendees.some(
+    (a) => !a.isHost && a.username === user.username
+  );
   return (
     <Segment.Group>
       <Segment>
@@ -12,11 +22,31 @@ const Activity = ({ activity }) => {
             <Item.Image
               size="tiny"
               circular
-              src="/assets/user.png"
+              src={host.image || "/assets/user.png"}
             ></Item.Image>
             <Item.Content>
-              <Item.Header as="a">{activity.title}</Item.Header>
-              <Item.Description>Hosted by Bob</Item.Description>
+              <Item.Header as={Link} to={`/activities/${activity.id}`}>
+                {activity.title}
+              </Item.Header>
+              <Item.Description>{`Hosted by ${host.displayName}`}</Item.Description>
+              {host.username === user.username && (
+                <Item.Description>
+                  <Label
+                    basic
+                    color="orange"
+                    content="You are hosting this activity"
+                  />
+                </Item.Description>
+              )}
+              {attendee && (
+                <Item.Description>
+                  <Label
+                    basic
+                    color="green"
+                    content="You are going to this activity"
+                  />
+                </Item.Description>
+              )}
             </Item.Content>
           </Item>
         </Item.Group>
@@ -25,7 +55,9 @@ const Activity = ({ activity }) => {
         <Icon name="clock" /> {format(activity.date, "h:mm a")}
         <Icon name="marker" /> {activity.venue}, {activity.city}
       </Segment>
-      <Segment secondary>Attendees will go here</Segment>
+      <Segment secondary>
+        <ActivityAttendees attendees={activity.attendees} />
+      </Segment>
       <Segment clearing>
         <span>{activity.description}</span>
         <Button
@@ -40,4 +72,8 @@ const Activity = ({ activity }) => {
   );
 };
 
-export default Activity;
+const mapStateToProps = createStructuredSelector({
+  user: selectUser,
+});
+
+export default connect(mapStateToProps)(Activity);

@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import ActivityHeader from "./activityHeader";
 import ActivityInfo from "./activityInfo";
 import ActivityChat from "./activityChat";
+import ActivitySidebar from "./activitySidebar";
 
 import { fetchActivityStart } from "../../redux/activity/activity.actions";
 
@@ -45,6 +46,9 @@ const ActivityDetails = ({
         <ActivityHeader activity={activity} />
         <ActivityInfo activity={activity} />
         <ActivityChat />
+      </Grid.Column>
+      <Grid.Column width={6}>
+        <ActivitySidebar attendees={activity.attendees} />
       </Grid.Column>
     </Grid>
   ) : null;

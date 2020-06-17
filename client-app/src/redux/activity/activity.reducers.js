@@ -68,14 +68,13 @@ const activityReducer = (state = INITIAL_STATE, action) => {
         submitting: true,
       };
     case ActivityTypes.EDIT_ACTIVITY_SUCCESS:
-      const activity = { ...action.payload };
       return {
         ...state,
         submitting: false,
-        activity: activity,
+        activity: action.payload,
         activities: [
-          ...state.activities.filter((a) => a.id !== activity.id),
-          activity,
+          ...state.activities.filter((a) => a.id !== action.payload.id),
+          action.payload,
         ],
       };
     case ActivityTypes.EDIT_ACTIVITY_FAILURE:
@@ -126,6 +125,48 @@ const activityReducer = (state = INITIAL_STATE, action) => {
         ...state,
         isFetching: action.payload,
       };
+    case ActivityTypes.ATTEND_ACTIVITY_START:
+      return {
+        ...state,
+        submitting: true,
+      };
+    case ActivityTypes.ATTEND_ACTIVITY_SUCCESS: {
+      const { activityId } = action.payload;
+      const { user } = action.payload;
+      const activity = state.activities.find((a) => a.id === activityId);
+      activity.attendees = activity.attendees.concat([user]);
+      return {
+        ...state,
+        submitting: false,
+        activity: activity,
+        activities: [
+          ...state.activities.filter((a) => a.id !== activityId),
+          activity,
+        ],
+      };
+    }
+    case ActivityTypes.UNATTEND_ACTIVITY_START:
+      return {
+        ...state,
+        submitting: true,
+      };
+    case ActivityTypes.UNATTEND_ACTIVITY_SUCCESS: {
+      const { activityId } = action.payload;
+      const { user } = action.payload;
+      const activity = state.activities.find((a) => a.id === activityId);
+      const attendees = activity.attendees.filter(
+        (a) => a.username !== user.username
+      );
+      return {
+        ...state,
+        submitting: false,
+        activity: { ...activity, attendees },
+        activities: [
+          ...state.activities.filter((a) => a.id !== activityId),
+          { ...activity, attendees },
+        ],
+      };
+    }
     default:
       return state;
   }

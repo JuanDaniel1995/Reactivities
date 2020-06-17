@@ -83,3 +83,19 @@ export const setFetching = (fetching) => ({
   type: ActivityTypes.SET_FETCHING,
   payload: fetching,
 });
+export const attendActivityStart = (activityId, user) => ({
+  type: ActivityTypes.ATTEND_ACTIVITY_START,
+  payload: { activityId, user },
+});
+export const attendActivitySuccess = (activityId, user) => ({
+  type: ActivityTypes.ATTEND_ACTIVITY_SUCCESS,
+  payload: { activityId, user },
+});
+export const unattendActivityStart = (activityId, user) => ({
+  type: ActivityTypes.UNATTEND_ACTIVITY_START,
+  payload: { activityId, user },
+});
+export const unattendActivitySuccess = (activityId, user) => ({
+  type: ActivityTypes.UNATTEND_ACTIVITY_SUCCESS,
+  payload: { activityId, user },
+});

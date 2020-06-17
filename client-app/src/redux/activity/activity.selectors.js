@@ -13,7 +13,7 @@ export const selectActivitiesByDate = createSelector(
 );
 
 export const selectActivitiesGroupedByDate = createSelector(
-  [selectActivities],
+  [selectActivitiesByDate],
   (activities) =>
     Object.entries(
       activities.reduce((activities, activity) => {

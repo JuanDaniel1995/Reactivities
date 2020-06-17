@@ -12,13 +12,14 @@ import ActivityForm from "./components/activityForm/activityForm";
 import ActivityDetails from "./components/activityDetails/activityDetails";
 import NotFound from "./pages/errors/notFound";
 
+import { fetchActivitiesStart } from "./redux/activity/activity.actions";
 import { retrieveUser } from "./redux/user/user.actions";
 
 import { selectIsActivityFetching } from "./redux/activity/activity.selectors";
 import { selectToken } from "./redux/user/user.selectors";
 import { selectIsAppLoaded } from "./redux/common/common.selectors";
 
-const App = ({ isAppLoaded, retrieveUser, token }) => {
+const App = ({ isAppLoaded, retrieveUser, fetchActivities, token }) => {
   useEffect(() => {
     token
       ? localStorage.setItem("jwt", token)
@@ -28,6 +29,10 @@ const App = ({ isAppLoaded, retrieveUser, token }) => {
   useEffect(() => {
     retrieveUser();
   }, [retrieveUser]);
+
+  useEffect(() => {
+    fetchActivities();
+  }, [fetchActivities]);
 
   if (!isAppLoaded && token) {
     return (
@@ -72,6 +77,7 @@ const mapStateToProps = createStructuredSelector({
 
 const mapDispatchToProps = (dispatch) => ({
   retrieveUser: () => dispatch(retrieveUser()),
+  fetchActivities: () => dispatch(fetchActivitiesStart()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

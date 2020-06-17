@@ -13,6 +13,8 @@ import {
   fetchActivitiesFailure,
   fetchActivitySuccess,
   fetchActivityFailure,
+  attendActivitySuccess,
+  unattendActivitySuccess,
   setSubmitting,
 } from "./activity.actions";
 
@@ -122,6 +124,22 @@ export function* deleteActivityAsync({ payload: { id }, meta: { onError } }) {
   }
 }
 
+export function* attendActivityAsync({ payload: { activityId, user } }) {
+  try {
+    yield agent.Activities.attend(activityId);
+    yield put(setSubmitting(false));
+    yield put(attendActivitySuccess(activityId, user));
+  } catch (error) {}
+}
+
+export function* unattendActivityAsync({ payload: { activityId, user } }) {
+  try {
+    yield agent.Activities.unattend(activityId);
+    yield put(setSubmitting(false));
+    yield put(unattendActivitySuccess(activityId, user));
+  } catch (error) {}
+}
+
 export function* fetchActivitiesStart() {
   yield takeLatest(ActivityTypes.FETCH_ACTIVITIES_START, fetchActivitiesAsync);
 }
@@ -142,6 +160,17 @@ export function* deleteActivityStart() {
   yield takeLatest(ActivityTypes.DELETE_ACTIVITY_START, deleteActivityAsync);
 }
 
+export function* attendActivityStart() {
+  yield takeLatest(ActivityTypes.ATTEND_ACTIVITY_START, attendActivityAsync);
+}
+
+export function* unattendActivityStart() {
+  yield takeLatest(
+    ActivityTypes.UNATTEND_ACTIVITY_START,
+    unattendActivityAsync
+  );
+}
+
 export function* activitySagas() {
   yield all([
     call(fetchActivitiesStart),
@@ -149,5 +178,7 @@ export function* activitySagas() {
     call(createActivityStart),
     call(editActivityStart),
     call(deleteActivityStart),
+    call(attendActivityStart),
+    call(unattendActivityStart),
   ]);
 }

@@ -32,6 +32,8 @@ const Activities = {
   create: async (activity) => requests.post("/activities", activity),
   update: (activity) => requests.put(`/activities/${activity.id}`, activity),
   delete: (id) => requests.del(`/activities/${id}`),
+  attend: async (id) => requests.post(`/activities/${id}/attend`),
+  unattend: async (id) => requests.del(`/activities/${id}/attend`),
 };
 
 const User = {

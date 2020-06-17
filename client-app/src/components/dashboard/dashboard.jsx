@@ -1,18 +1,13 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 import { Grid, Dimmer, Loader } from "semantic-ui-react";
 
 import ActivityList from "../activityList/activityList";
 
-import { fetchActivitiesStart } from "../../redux/activity/activity.actions";
-
 import { selectIsActivityFetching } from "../../redux/activity/activity.selectors";
 
-const Dashboard = ({ fetchActivities, isFetching }) => {
-  useEffect(() => {
-    fetchActivities();
-  }, [fetchActivities]);
+const Dashboard = ({ isFetching }) => {
   if (isFetching) {
     return (
       <Dimmer active inverted>
@@ -33,8 +28,4 @@ const mapStateToProps = createStructuredSelector({
   isFetching: selectIsActivityFetching,
 });
 
-const mapDispatchToProps = (dispatch) => ({
-  fetchActivities: () => dispatch(fetchActivitiesStart()),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);
+export default connect(mapStateToProps)(Dashboard);

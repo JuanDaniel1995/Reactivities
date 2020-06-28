@@ -5,12 +5,14 @@ import { createStructuredSelector } from "reselect";
 import { Container, Dimmer, Loader } from "semantic-ui-react";
 import { ToastContainer } from "react-toastify";
 
+import HomePage from "./pages/home/home";
+import ProfilePage from "./pages/profiles/profile";
+import NotFound from "./pages/errors/notFound";
+
 import Header from "./components/header/header";
 import Dashboard from "./components/dashboard/dashboard";
-import HomePage from "./pages/home/home";
 import ActivityForm from "./components/activityForm/activityForm";
 import ActivityDetails from "./components/activityDetails/activityDetails";
-import NotFound from "./pages/errors/notFound";
 
 import { fetchActivitiesStart } from "./redux/activity/activity.actions";
 import { retrieveUser } from "./redux/user/user.actions";
@@ -59,6 +61,7 @@ const App = ({ isAppLoaded, retrieveUser, fetchActivities, token }) => {
                   path={["/createActivity", "/manage/:id"]}
                   component={ActivityForm}
                 />
+                <Route path="/profile/:username" component={ProfilePage} />
                 <Route component={NotFound} />
               </Switch>
             </Container>

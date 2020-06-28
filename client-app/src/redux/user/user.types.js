@@ -7,6 +7,7 @@ const UserTypes = {
   REGISTER_SUCCESS: "REGISTER_SUCCESS",
   LOGOUT: "LOGOUT",
   SET_TOKEN: "SET_TOKEN",
+  SET_IMAGE: "SET_IMAGE",
 };
 
 export default UserTypes;

@@ -40,6 +40,12 @@ const userReducer = (state = INITIAL_STATE, action) => {
         ...state,
         token: action.payload,
       };
+    case UserTypes.SET_IMAGE:
+      const image = action.payload;
+      return {
+        ...state,
+        user: { ...state.user, image },
+      };
     default:
       return state;
   }

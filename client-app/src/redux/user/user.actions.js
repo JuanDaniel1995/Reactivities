@@ -18,3 +18,7 @@ export const retrieveUserSuccess = (user) => ({
 export const logOut = () => ({
   type: UserTypes.LOGOUT,
 });
+export const setImage = (image) => ({
+  type: UserTypes.SET_IMAGE,
+  payload: image,
+});

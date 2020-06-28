@@ -46,7 +46,7 @@ const Header = ({ user, logOut, history: { push }, setToken }) => {
               <Dropdown.Menu>
                 <Dropdown.Item
                   as={Link}
-                  to={`/profile/username`}
+                  to={`/profile/${user.username}`}
                   text="My profile"
                   icon="user"
                 />

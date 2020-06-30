@@ -44,3 +44,14 @@ export const deletePhotoSuccess = (photo) => ({
 export const deletePhotoFailure = () => ({
   type: ProfilesTypes.DELETE_PHOTO_SUCCESS,
 });
+export const updateProfile = (profile) => ({
+  type: ProfilesTypes.UPDATE_PROFILE_START,
+  payload: profile,
+});
+export const updateProfileSuccess = (profile) => ({
+  type: ProfilesTypes.UPDATE_PROFILE_SUCCESS,
+  payload: profile,
+});
+export const updateProfileFailure = () => ({
+  type: ProfilesTypes.UPDATE_PROFILE_FAILURE,
+});

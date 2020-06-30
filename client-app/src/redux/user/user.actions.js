@@ -15,6 +15,10 @@ export const retrieveUserSuccess = (user) => ({
   type: UserTypes.RETRIEVE_USER_SUCCESS,
   payload: user,
 });
+export const updateUser = (user) => ({
+  type: UserTypes.UPDATE_USER,
+  payload: user,
+});
 export const logOut = () => ({
   type: UserTypes.LOGOUT,
 });

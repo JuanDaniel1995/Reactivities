@@ -75,6 +75,22 @@ const profilesReducer = (state = INITIAL_STATE, action) => {
         loading: false,
       };
     }
+    case ProfilesTypes.UPDATE_PROFILE_START:
+      return {
+        ...state,
+        loading: true,
+      };
+    case ProfilesTypes.UPDATE_PROFILE_SUCCESS: {
+      const profile = action.payload;
+      return {
+        ...state,
+        profile: {
+          ...state.profile,
+          ...profile,
+        },
+        loading: false,
+      };
+    }
     default:
       return state;
   }

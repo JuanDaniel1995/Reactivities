@@ -9,6 +9,8 @@ import {
   setMainPhotoFailure,
   deletePhotoSuccess,
   deletePhotoFailure,
+  updateProfileSuccess,
+  updateProfileFailure,
 } from "./profiles.actions";
 
 import { setImage } from "../user/user.actions";
@@ -44,6 +46,15 @@ export function* fetchProfileAsync({ payload: user }) {
   }
 }
 
+export function* updateProfileAsync({ payload: profile }) {
+  try {
+    yield agent.Profiles.updateProfile(profile);
+    yield put(updateProfileSuccess(profile));
+  } catch (error) {
+    yield put(updateProfileFailure());
+  }
+}
+
 export function* deletePhotoStart() {
   yield takeLatest(ProfilesTypes.DELETE_PHOTO_START, deletePhotoAsync);
 }
@@ -56,10 +67,15 @@ export function* fetchProfileStart() {
   yield takeLatest(ProfilesTypes.RETRIEVE_PROFILE_START, fetchProfileAsync);
 }
 
+export function* updateProfileStart() {
+  yield takeLatest(ProfilesTypes.UPDATE_PROFILE_START, updateProfileAsync);
+}
+
 export function* profilesSagas() {
   yield all([
     call(fetchProfileStart),
     call(setMainPhotoStart),
     call(deletePhotoStart),
+    call(updateProfileStart),
   ]);
 }

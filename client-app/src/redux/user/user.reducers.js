@@ -46,6 +46,12 @@ const userReducer = (state = INITIAL_STATE, action) => {
         ...state,
         user: { ...state.user, image },
       };
+    case UserTypes.UPDATE_USER:
+      console.log(action.payload);
+      return {
+        ...state,
+        user: { ...state.user, displayName: action.payload },
+      };
     default:
       return state;
   }

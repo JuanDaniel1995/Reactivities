@@ -11,6 +11,12 @@ import {
   deletePhotoFailure,
   updateProfileSuccess,
   updateProfileFailure,
+  followProfileSuccess,
+  followProfileFailure,
+  unfollowProfileSuccess,
+  unfollowProfileFailure,
+  fetchFollowingsSuccess,
+  fetchFollowingsFailure,
 } from "./profiles.actions";
 
 import { setImage } from "../user/user.actions";
@@ -55,6 +61,48 @@ export function* updateProfileAsync({ payload: profile }) {
   }
 }
 
+export function* followProfileAsync({ payload: username }) {
+  try {
+    yield agent.Profiles.follow(username);
+    yield put(followProfileSuccess(username));
+  } catch (error) {
+    yield put(followProfileFailure());
+  }
+}
+
+export function* unfollowProfileAsync({ payload: username }) {
+  try {
+    yield agent.Profiles.unfollow(username);
+    yield put(unfollowProfileSuccess(username));
+  } catch (error) {
+    yield put(unfollowProfileFailure());
+  }
+}
+
+export function* fetchFollowingsAsync({ payload: { username, predicate } }) {
+  try {
+    const profiles = yield agent.Profiles.listFollowings(username, predicate);
+    yield put(fetchFollowingsSuccess(profiles));
+  } catch (error) {
+    yield put(fetchFollowingsFailure());
+  }
+}
+
+export function* fetchFollowingsStart() {
+  yield takeLatest(
+    ProfilesTypes.RETRIEVE_FOLLOWINGS_START,
+    fetchFollowingsAsync
+  );
+}
+
+export function* unfollowProfileStart() {
+  yield takeLatest(ProfilesTypes.UNFOLLOW_PROFILE_START, unfollowProfileAsync);
+}
+
+export function* followProfileStart() {
+  yield takeLatest(ProfilesTypes.FOLLOW_PROFILE_START, followProfileAsync);
+}
+
 export function* deletePhotoStart() {
   yield takeLatest(ProfilesTypes.DELETE_PHOTO_START, deletePhotoAsync);
 }
@@ -77,5 +125,8 @@ export function* profilesSagas() {
     call(setMainPhotoStart),
     call(deletePhotoStart),
     call(updateProfileStart),
+    call(followProfileStart),
+    call(unfollowProfileStart),
+    call(fetchFollowingsStart),
   ]);
 }

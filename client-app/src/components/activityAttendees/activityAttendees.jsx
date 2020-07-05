@@ -1,6 +1,11 @@
 import React from "react";
 import { List, Image, Popup } from "semantic-ui-react";
 
+const styles = {
+  borderColor: "orange",
+  borderWidth: 2,
+};
+
 const ActivityAttendees = ({ attendees }) => {
   return (
     <List horizontal>
@@ -13,6 +18,8 @@ const ActivityAttendees = ({ attendees }) => {
                 size="mini"
                 circular
                 src={attendee.image || "/assets/user.png"}
+                bordered
+                style={attendee.following ? styles : null}
               />
             }
           />

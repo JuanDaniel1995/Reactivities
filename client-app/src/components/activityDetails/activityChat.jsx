@@ -22,7 +22,6 @@ const ActivityChat = ({ activity, token, addCommentSuccess }) => {
         accessTokenFactory: () => token,
       })
       .build();
-    console.log(connection.state);
     connection.start().then(() => {
       connection.invoke("AddToGroup", activity.id);
     });
@@ -40,7 +39,7 @@ const ActivityChat = ({ activity, token, addCommentSuccess }) => {
         });
       }
     };
-  }, [activity.id]);
+  }, [activity.id, addCommentSuccess, token]);
 
   const addComment = async (comment) => {
     comment.activityId = activity.id;

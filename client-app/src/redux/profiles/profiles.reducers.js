@@ -5,6 +5,7 @@ const INITIAL_STATE = {
   isFetching: false,
   uploading: false,
   loading: false,
+  followings: [],
 };
 
 const profilesReducer = (state = INITIAL_STATE, action) => {
@@ -88,6 +89,53 @@ const profilesReducer = (state = INITIAL_STATE, action) => {
           ...state.profile,
           ...profile,
         },
+        loading: false,
+      };
+    }
+    case ProfilesTypes.FOLLOW_PROFILE_START:
+      return {
+        ...state,
+        loading: true,
+      };
+    case ProfilesTypes.FOLLOW_PROFILE_SUCCESS: {
+      const following = true;
+      let { followersCount } = state.profile;
+      return {
+        ...state,
+        profile: {
+          ...state.profile,
+          following,
+          followersCount: ++followersCount,
+        },
+        loading: false,
+      };
+    }
+    case ProfilesTypes.UNFOLLOW_PROFILE_START:
+      return {
+        ...state,
+        loading: true,
+      };
+    case ProfilesTypes.UNFOLLOW_PROFILE_SUCCESS:
+      const following = false;
+      let { followersCount } = state.profile;
+      return {
+        ...state,
+        profile: {
+          ...state.profile,
+          following,
+          followersCount: --followersCount,
+        },
+        loading: false,
+      };
+    case ProfilesTypes.RETRIEVE_FOLLOWINGS_START:
+      return {
+        ...state,
+        loading: true,
+      };
+    case ProfilesTypes.RETRIEVE_FOLLOWINGS_SUCCESS: {
+      return {
+        ...state,
+        followings: action.payload,
         loading: false,
       };
     }

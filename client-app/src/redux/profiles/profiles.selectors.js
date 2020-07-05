@@ -21,3 +21,7 @@ export const selectIsPhotoUploading = createSelector(
   [profiles],
   (profiles) => profiles.uploading
 );
+export const selectFollowings = createSelector(
+  [profiles],
+  (profiles) => profiles.followings
+);

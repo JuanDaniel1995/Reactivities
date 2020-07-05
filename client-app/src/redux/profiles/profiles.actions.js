@@ -55,3 +55,36 @@ export const updateProfileSuccess = (profile) => ({
 export const updateProfileFailure = () => ({
   type: ProfilesTypes.UPDATE_PROFILE_FAILURE,
 });
+export const followProfile = (username) => ({
+  type: ProfilesTypes.FOLLOW_PROFILE_START,
+  payload: username,
+});
+export const followProfileSuccess = (username) => ({
+  type: ProfilesTypes.FOLLOW_PROFILE_SUCCESS,
+  payload: username,
+});
+export const followProfileFailure = () => ({
+  type: ProfilesTypes.FOLLOW_PROFILE_FAILURE,
+});
+export const unfollowProfile = (username) => ({
+  type: ProfilesTypes.UNFOLLOW_PROFILE_START,
+  payload: username,
+});
+export const unfollowProfileSuccess = (username) => ({
+  type: ProfilesTypes.UNFOLLOW_PROFILE_SUCCESS,
+  payload: username,
+});
+export const unfollowProfileFailure = () => ({
+  type: ProfilesTypes.UNFOLLOW_PROFILE_FAILURE,
+});
+export const fetchFollowings = (username, predicate) => ({
+  type: ProfilesTypes.RETRIEVE_FOLLOWINGS_START,
+  payload: { username, predicate },
+});
+export const fetchFollowingsSuccess = (profiles) => ({
+  type: ProfilesTypes.RETRIEVE_FOLLOWINGS_SUCCESS,
+  payload: profiles,
+});
+export const fetchFollowingsFailure = () => ({
+  type: ProfilesTypes.RETRIEVE_FOLLOWINGS_FAILURE,
+});

@@ -45,7 +45,7 @@ const ActivityDetails = ({
       <Grid.Column width={10}>
         <ActivityHeader activity={activity} />
         <ActivityInfo activity={activity} />
-        <ActivityChat />
+        <ActivityChat activity={activity} />
       </Grid.Column>
       <Grid.Column width={6}>
         <ActivitySidebar attendees={activity.attendees} />

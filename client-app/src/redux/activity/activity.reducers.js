@@ -167,6 +167,25 @@ const activityReducer = (state = INITIAL_STATE, action) => {
         ],
       };
     }
+    case ActivityTypes.ADD_COMMENT_START:
+      return {
+        ...state,
+        submitting: true,
+      };
+    case ActivityTypes.ADD_COMMENT_SUCCESS: {
+      const { activityId, comment } = action.payload;
+      const activity = state.activities.find((a) => a.id === activityId);
+      const comments = [...activity.comments, comment];
+      return {
+        ...state,
+        submitting: false,
+        activity: { ...activity, comments },
+        activities: [
+          ...state.activities.filter((a) => a.id !== activityId),
+          { ...activity, comments },
+        ],
+      };
+    }
     default:
       return state;
   }

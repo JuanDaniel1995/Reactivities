@@ -58,13 +58,15 @@ export function* createActivityAsync({
   meta: { onSuccess, onError },
 }) {
   try {
-    yield agent.Activities.create(payload);
+    const activity = payload;
+    activity.comments = [];
+    yield agent.Activities.create(activity);
     yield put(setSubmitting(false));
     yield put(
       createActivitySuccess({
         ...payload,
-        date: new Date(payload.date),
-        time: new Date(payload.date),
+        date: new Date(activity.date),
+        time: new Date(activity.date),
       })
     );
     yield onSuccess(payload.id);

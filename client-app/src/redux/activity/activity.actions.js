@@ -99,3 +99,14 @@ export const unattendActivitySuccess = (activityId, user) => ({
   type: ActivityTypes.UNATTEND_ACTIVITY_SUCCESS,
   payload: { activityId, user },
 });
+export const addComment = (activityId, comment) => ({
+  type: ActivityTypes.ADD_COMMENT_START,
+  payload: { activityId, comment },
+});
+export const addCommentSuccess = (activityId, comment) => ({
+  type: ActivityTypes.ADD_COMMENT_SUCCESS,
+  payload: { activityId, comment },
+});
+export const addCommentFailure = () => ({
+  type: ActivityTypes.ADD_COMMENT_FAILURE,
+});

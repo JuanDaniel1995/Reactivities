@@ -17,6 +17,8 @@ import {
   unfollowProfileFailure,
   fetchFollowingsSuccess,
   fetchFollowingsFailure,
+  fetchUserActivitiesSuccess,
+  fetchUserActivitiesFailure,
 } from "./profiles.actions";
 
 import { setImage } from "../user/user.actions";
@@ -88,10 +90,31 @@ export function* fetchFollowingsAsync({ payload: { username, predicate } }) {
   }
 }
 
+export function* fetchUserActivitiesAsync({
+  payload: { username, predicate },
+}) {
+  try {
+    const userActivities = yield agent.Profiles.listActivities(
+      username,
+      predicate
+    );
+    yield put(fetchUserActivitiesSuccess(userActivities));
+  } catch (error) {
+    yield put(fetchUserActivitiesFailure());
+  }
+}
+
 export function* fetchFollowingsStart() {
   yield takeLatest(
     ProfilesTypes.RETRIEVE_FOLLOWINGS_START,
     fetchFollowingsAsync
+  );
+}
+
+export function* fetchUserActivitiesStart() {
+  yield takeLatest(
+    ProfilesTypes.RETRIEVE_USER_ACTIVITIES_START,
+    fetchUserActivitiesAsync
   );
 }
 
@@ -128,5 +151,6 @@ export function* profilesSagas() {
     call(followProfileStart),
     call(unfollowProfileStart),
     call(fetchFollowingsStart),
+    call(fetchUserActivitiesStart),
   ]);
 }

@@ -3,10 +3,18 @@ import ActivityTypes from "./activity.types";
 const INITIAL_STATE = {
   activities: [],
   isFetching: false,
+  isFetchingNext: false,
   activity: null,
   errorMessage: "",
   submitting: false,
   target: "",
+  activityCount: 0,
+  page: 0,
+  limit: 5,
+  isGoing: false,
+  isHost: false,
+  startDate: null,
+  filterChanged: false,
 };
 
 const activityReducer = (state = INITIAL_STATE, action) => {
@@ -16,12 +24,15 @@ const activityReducer = (state = INITIAL_STATE, action) => {
         ...state,
         isFetching: true,
       };
-    case ActivityTypes.FETCH_ACTIVITIES_SUCCESS:
+    case ActivityTypes.FETCH_ACTIVITIES_SUCCESS: {
+      const { activities, activityCount } = action.payload;
       return {
         ...state,
         isFetching: false,
-        activities: action.payload,
+        activities: activities,
+        activityCount: activityCount,
       };
+    }
     case ActivityTypes.FETCH_ACTIVITIES_FAILURE:
       return {
         ...state,
@@ -186,6 +197,63 @@ const activityReducer = (state = INITIAL_STATE, action) => {
         ],
       };
     }
+    case ActivityTypes.FETCH_NEXT_PAGE_START:
+      return {
+        ...state,
+        isFetchingNext: true,
+        filterChanged: false,
+      };
+    case ActivityTypes.FETCH_NEXT_PAGE_SUCCESS: {
+      const { activities, activityCount, page } = action.payload;
+      return {
+        ...state,
+        isFetchingNext: false,
+        activities: [...state.activities, ...activities],
+        activityCount: activityCount,
+        page: page,
+      };
+    }
+    case ActivityTypes.SET_IS_GOING: {
+      const isGoing = !state.isGoing;
+      return {
+        ...state,
+        isGoing,
+        isHost: false,
+        filterChanged: true,
+        activities: [],
+        page: 0,
+      };
+    }
+    case ActivityTypes.SET_IS_HOST: {
+      const isHost = !state.isHost;
+      return {
+        ...state,
+        isHost,
+        isGoing: false,
+        filterChanged: true,
+        activities: [],
+        page: 0,
+      };
+    }
+    case ActivityTypes.SET_START_DATE: {
+      const startDate = action.payload;
+      return {
+        ...state,
+        startDate,
+        filterChanged: true,
+        activities: [],
+        page: 0,
+      };
+    }
+    case ActivityTypes.RESET_INITIAL:
+      return {
+        ...state,
+        isHost: false,
+        isGoing: false,
+        activities: [],
+        page: 0,
+        filterChanged: true,
+      };
     default:
       return state;
   }

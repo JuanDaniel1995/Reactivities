@@ -55,3 +55,39 @@ export const selectTarget = createSelector(
   [activity],
   (activity) => activity.target
 );
+export const selectActivityCount = createSelector(
+  [activity],
+  (activity) => activity.activityCount
+);
+export const selectPage = createSelector(
+  [activity],
+  (activity) => activity.page
+);
+export const selectLimit = createSelector(
+  [activity],
+  (activity) => activity.limit
+);
+export const selectIsGoing = createSelector(
+  [activity],
+  (activity) => activity.isGoing
+);
+export const selectIsHost = createSelector(
+  [activity],
+  (activity) => activity.isHost
+);
+export const selectStartDate = createSelector(
+  [activity],
+  (activity) => activity.startDate
+);
+export const selectIsFetchingNext = createSelector(
+  [activity],
+  (activity) => activity.isFetchingNext
+);
+export const selectFilterChanged = createSelector(
+  [activity],
+  (activity) => activity.filterChanged
+);
+export const selectTotalPages = createSelector([activity], (activity) => {
+  const pages = Math.ceil(activity.activityCount / activity.limit);
+  return pages;
+});

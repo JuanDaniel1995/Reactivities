@@ -15,6 +15,8 @@ import {
   fetchActivityFailure,
   attendActivitySuccess,
   unattendActivitySuccess,
+  fetchNextSuccess,
+  fetchNextFailure,
   setSubmitting,
 } from "./activity.actions";
 
@@ -22,13 +24,35 @@ import ActivityTypes from "./activity.types";
 
 export function* fetchActivitiesAsync() {
   try {
-    const activities = yield agent.Activities.list();
+    const activitiesEnvelope = yield agent.Activities.list(5, 0);
+    const { activities, activityCount } = activitiesEnvelope;
     activities.forEach((activity) => {
       activity.date = new Date(activity.date);
     });
-    yield put(fetchActivitiesSuccess(activities));
+    yield put(fetchActivitiesSuccess(activities, activityCount));
   } catch (error) {
     yield put(fetchActivitiesFailure(error.message));
+  }
+}
+
+export function* fetchNextPageAsync({
+  payload: { limit, page, isGoing, isHost, startDate },
+}) {
+  try {
+    const activitiesEnvelope = yield agent.Activities.list(
+      limit,
+      page,
+      isGoing,
+      isHost,
+      startDate
+    );
+    const { activities, activityCount } = activitiesEnvelope;
+    activities.forEach((activity) => {
+      activity.date = new Date(activity.date);
+    });
+    yield put(fetchNextSuccess(activities, activityCount, page));
+  } catch (error) {
+    yield put(fetchNextFailure(error.message));
   }
 }
 
@@ -146,6 +170,10 @@ export function* fetchActivitiesStart() {
   yield takeLatest(ActivityTypes.FETCH_ACTIVITIES_START, fetchActivitiesAsync);
 }
 
+export function* fetchNextPageStart() {
+  yield takeLatest(ActivityTypes.FETCH_NEXT_PAGE_START, fetchNextPageAsync);
+}
+
 export function* fetchActivityStart() {
   yield takeLatest(ActivityTypes.FETCH_ACTIVITY_START, fetchActivityAsync);
 }
@@ -182,5 +210,6 @@ export function* activitySagas() {
     call(deleteActivityStart),
     call(attendActivityStart),
     call(unattendActivityStart),
+    call(fetchNextPageStart),
   ]);
 }

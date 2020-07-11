@@ -36,7 +36,15 @@ const requests = {
 };
 
 const Activities = {
-  list: async () => requests.get("/activities"),
+  list: async (limit, page, isGoing, isHost, startDate) => {
+    const params = new URLSearchParams();
+    params.append("limit", String(limit));
+    params.append("offset", `${page * limit}`);
+    isGoing !== undefined && params.append("isGoing", isGoing);
+    isHost !== undefined && params.append("isHost", isHost);
+    startDate && params.append("startDate", startDate.toISOString());
+    return axios.get("/activities", { params }).then(responseBody);
+  },
   details: async (id) => requests.get(`/activities/${id}`),
   create: async (activity) => requests.post("/activities", activity),
   update: (activity) => requests.put(`/activities/${activity.id}`, activity),
@@ -61,6 +69,8 @@ const Profiles = {
   unfollow: (username) => requests.del(`/profiles/${username}/follow`, {}),
   listFollowings: (username, predicate) =>
     requests.get(`/profiles/${username}/follow?predicate=${predicate}`),
+  listActivities: (username, predicate) =>
+    requests.get(`/profiles/${username}/activities?predicate=${predicate}`),
 };
 
 export default {

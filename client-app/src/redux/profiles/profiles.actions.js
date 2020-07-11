@@ -88,3 +88,14 @@ export const fetchFollowingsSuccess = (profiles) => ({
 export const fetchFollowingsFailure = () => ({
   type: ProfilesTypes.RETRIEVE_FOLLOWINGS_FAILURE,
 });
+export const fetchUserActivities = (username, predicate) => ({
+  type: ProfilesTypes.RETRIEVE_USER_ACTIVITIES_START,
+  payload: { username, predicate },
+});
+export const fetchUserActivitiesSuccess = (userActivities) => ({
+  type: ProfilesTypes.RETRIEVE_USER_ACTIVITIES_SUCCESS,
+  payload: userActivities,
+});
+export const fetchUserActivitiesFailure = () => ({
+  type: ProfilesTypes.RETRIEVE_USER_ACTIVITIES_FAILURE,
+});

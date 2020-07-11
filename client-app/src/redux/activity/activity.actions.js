@@ -3,9 +3,9 @@ import ActivityTypes from "./activity.types";
 export const fetchActivitiesStart = () => ({
   type: ActivityTypes.FETCH_ACTIVITIES_START,
 });
-export const fetchActivitiesSuccess = (activities) => ({
+export const fetchActivitiesSuccess = (activities, activityCount) => ({
   type: ActivityTypes.FETCH_ACTIVITIES_SUCCESS,
-  payload: activities,
+  payload: { activities, activityCount },
 });
 export const fetchActivitiesFailure = () => ({
   type: ActivityTypes.FETCH_ACTIVITIES_FAILURE,
@@ -109,4 +109,30 @@ export const addCommentSuccess = (activityId, comment) => ({
 });
 export const addCommentFailure = () => ({
   type: ActivityTypes.ADD_COMMENT_FAILURE,
+});
+export const fetchNext = (limit, page, isGoing, isHost, startDate) => {
+  return {
+    type: ActivityTypes.FETCH_NEXT_PAGE_START,
+    payload: { limit, page, isGoing, isHost, startDate },
+  };
+};
+export const fetchNextSuccess = (activities, activityCount, page) => ({
+  type: ActivityTypes.FETCH_NEXT_PAGE_SUCCESS,
+  payload: { activities, activityCount, page },
+});
+export const fetchNextFailure = () => ({
+  type: ActivityTypes.FETCH_NEXT_PAGE_FAILURE,
+});
+export const setIsGoing = () => ({
+  type: ActivityTypes.SET_IS_GOING,
+});
+export const setIsHost = () => ({
+  type: ActivityTypes.SET_IS_HOST,
+});
+export const setStartDate = (startDate) => ({
+  type: ActivityTypes.SET_START_DATE,
+  payload: startDate,
+});
+export const resetInitial = () => ({
+  type: ActivityTypes.RESET_INITIAL,
 });

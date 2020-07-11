@@ -6,10 +6,25 @@ const INITIAL_STATE = {
   uploading: false,
   loading: false,
   followings: [],
+  loadingActivities: false,
+  userActivities: [],
 };
 
 const profilesReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
+    case ProfilesTypes.RETRIEVE_USER_ACTIVITIES_START:
+      return {
+        ...state,
+        loadingActivities: true,
+      };
+    case ProfilesTypes.RETRIEVE_USER_ACTIVITIES_SUCCESS: {
+      const userActivities = action.payload;
+      return {
+        ...state,
+        userActivities: userActivities,
+        loadingActivities: false,
+      };
+    }
     case ProfilesTypes.RETRIEVE_PROFILE_START:
       return {
         ...state,

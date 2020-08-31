@@ -1,13 +1,17 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
-import { Grid, Dimmer, Loader } from "semantic-ui-react";
+import { Grid, Loader } from "semantic-ui-react";
 import InfiniteScroll from "react-infinite-scroller";
 
 import ActivityList from "../activityList/activityList";
+import ActivityPlaceholder from "../activityPlaceholder/activityPlaceholder";
+
 import ActivityFilters from "../activityFilters/activityFilters";
 
 import { fetchNext } from "../../redux/activity/activity.actions";
+
+import { logOut } from "../../redux/user/user.actions";
 
 import {
   selectIsActivityFetching,
@@ -21,7 +25,6 @@ import {
   selectTotalPages,
   selectFilterChanged,
 } from "../../redux/activity/activity.selectors";
-import { useEffect } from "react";
 
 const Dashboard = ({
   fetchNext,
@@ -34,35 +37,42 @@ const Dashboard = ({
   startDate,
   totalPages,
   filterChanged,
+  logOut,
+  history: { push },
 }) => {
   const handleGetNext = () => {
     if (page + 1 < totalPages)
-      fetchNext(limit, page + 1, isGoing, isHost, startDate);
+      fetchNext(limit, page + 1, isGoing, isHost, startDate, () => {
+        logOut();
+        push("/");
+      });
   };
 
   useEffect(() => {
-    if (filterChanged) fetchNext(5, 0, isGoing, isHost, startDate);
-  }, [fetchNext, isGoing, isHost, startDate, filterChanged]);
-
-  if (isFetching || filterChanged) {
-    return (
-      <Dimmer active inverted>
-        <Loader content="Loading activities..." />
-      </Dimmer>
-    );
-  }
+    if (filterChanged)
+      fetchNext(5, 0, isGoing, isHost, startDate, () => {
+        logOut();
+        push("/");
+      });
+  }, [fetchNext, isGoing, isHost, startDate, filterChanged, logOut, push]);
 
   return (
     <>
       <Grid>
         <Grid.Column width={10}>
-          <InfiniteScroll
-            loadMore={handleGetNext}
-            hasMore={!isNextFetching && page + 1 < totalPages}
-            initialLoad={false}
-          >
-            <ActivityList />
-          </InfiniteScroll>
+          {isFetching || filterChanged ? (
+            <>
+              <ActivityPlaceholder />
+            </>
+          ) : (
+            <InfiniteScroll
+              loadMore={handleGetNext}
+              hasMore={!isNextFetching && page + 1 < totalPages}
+              initialLoad={false}
+            >
+              <ActivityList />
+            </InfiniteScroll>
+          )}
         </Grid.Column>
         <Grid.Column width={6}>
           <ActivityFilters />
@@ -89,8 +99,11 @@ const mapStateToProps = createStructuredSelector({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  fetchNext: (limit, page, isGoing, isHost, startDate) =>
-    dispatch(fetchNext(limit, page, isGoing, isHost, startDate)),
+  fetchNext: (limit, page, isGoing, isHost, startDate, onExpiredToken) =>
+    dispatch(
+      fetchNext(limit, page, isGoing, isHost, startDate, onExpiredToken)
+    ),
+  logOut: () => dispatch(logOut()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);

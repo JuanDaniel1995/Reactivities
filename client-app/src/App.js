@@ -1,10 +1,12 @@
 import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import { Route, Switch } from "react-router-dom";
+import { withRouter } from "react-router";
 import { createStructuredSelector } from "reselect";
 import { Container, Dimmer, Loader } from "semantic-ui-react";
 import { ToastContainer } from "react-toastify";
 
+import PrivateRoute from "./pages/privateRoute/privateRoute";
 import HomePage from "./pages/home/home";
 import ProfilePage from "./pages/profiles/profile";
 import NotFound from "./pages/errors/notFound";
@@ -15,17 +17,26 @@ import ActivityForm from "./components/activityForm/activityForm";
 import ActivityDetails from "./components/activityDetails/activityDetails";
 
 import { fetchActivitiesStart } from "./redux/activity/activity.actions";
-import { retrieveUser } from "./redux/user/user.actions";
+import { retrieveUser, logOut } from "./redux/user/user.actions";
 
 import { selectIsActivityFetching } from "./redux/activity/activity.selectors";
 import { selectToken } from "./redux/user/user.selectors";
 import { selectIsAppLoaded } from "./redux/common/common.selectors";
 
-const App = ({ isAppLoaded, retrieveUser, fetchActivities, token }) => {
+const App = ({
+  isAppLoaded,
+  retrieveUser,
+  fetchActivities,
+  token,
+  history: { push },
+  logOut,
+}) => {
   useEffect(() => {
-    token
-      ? localStorage.setItem("jwt", token)
-      : localStorage.removeItem("jwt", token);
+    if (token) {
+      localStorage.setItem("jwt", token);
+    } else {
+      localStorage.removeItem("jwt", token);
+    }
   }, [token]);
 
   useEffect(() => {
@@ -33,8 +44,12 @@ const App = ({ isAppLoaded, retrieveUser, fetchActivities, token }) => {
   }, [retrieveUser]);
 
   useEffect(() => {
-    fetchActivities();
-  }, [fetchActivities]);
+    if (token)
+      fetchActivities(() => {
+        logOut();
+        push("/");
+      });
+  }, [fetchActivities, token, logOut, push]);
 
   if (!isAppLoaded && token) {
     return (
@@ -55,13 +70,19 @@ const App = ({ isAppLoaded, retrieveUser, fetchActivities, token }) => {
             <Header />
             <Container style={{ marginTop: "7em" }}>
               <Switch>
-                <Route exact path="/activities" component={Dashboard} />
-                <Route path="/activities/:id" component={ActivityDetails} />
-                <Route
+                <PrivateRoute exact path="/activities" component={Dashboard} />
+                <PrivateRoute
+                  path="/activities/:id"
+                  component={ActivityDetails}
+                />
+                <PrivateRoute
                   path={["/createActivity", "/manage/:id"]}
                   component={ActivityForm}
                 />
-                <Route path="/profile/:username" component={ProfilePage} />
+                <PrivateRoute
+                  path="/profile/:username"
+                  component={ProfilePage}
+                />
                 <Route component={NotFound} />
               </Switch>
             </Container>
@@ -80,7 +101,8 @@ const mapStateToProps = createStructuredSelector({
 
 const mapDispatchToProps = (dispatch) => ({
   retrieveUser: () => dispatch(retrieveUser()),
-  fetchActivities: () => dispatch(fetchActivitiesStart()),
+  fetchActivities: (onExpiredToken) => dispatch(fetchActivitiesStart(onExpiredToken)),
+  logOut: () => dispatch(logOut()),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(App));

@@ -22,7 +22,7 @@ import {
 
 import ActivityTypes from "./activity.types";
 
-export function* fetchActivitiesAsync() {
+export function* fetchActivitiesAsync({ meta: { onExpiredToken } }) {
   try {
     const activitiesEnvelope = yield agent.Activities.list(5, 0);
     const { activities, activityCount } = activitiesEnvelope;
@@ -31,12 +31,21 @@ export function* fetchActivitiesAsync() {
     });
     yield put(fetchActivitiesSuccess(activities, activityCount));
   } catch (error) {
+    const { status, headers } = error.response;
+    if (
+      status === 401 &&
+      headers["www-authenticate"].includes('Bearer error="invalid_token"')
+    ) {
+      window.localStorage.removeItem("jwt");
+      yield onExpiredToken();
+    }
     yield put(fetchActivitiesFailure(error.message));
   }
 }
 
 export function* fetchNextPageAsync({
   payload: { limit, page, isGoing, isHost, startDate },
+  meta: { onExpiredToken },
 }) {
   try {
     const activitiesEnvelope = yield agent.Activities.list(
@@ -52,6 +61,14 @@ export function* fetchNextPageAsync({
     });
     yield put(fetchNextSuccess(activities, activityCount, page));
   } catch (error) {
+    const { status, headers } = error.response;
+    if (
+      status === 401 &&
+      headers["www-authenticate"].includes('Bearer error="invalid_token"')
+    ) {
+      window.localStorage.removeItem("jwt");
+      onExpiredToken();
+    }
     yield put(fetchNextFailure(error.message));
   }
 }

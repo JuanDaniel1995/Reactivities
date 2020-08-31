@@ -1,7 +1,10 @@
 import ActivityTypes from "./activity.types";
 
-export const fetchActivitiesStart = () => ({
+export const fetchActivitiesStart = (onExpiredToken) => ({
   type: ActivityTypes.FETCH_ACTIVITIES_START,
+  meta: {
+    onExpiredToken,
+  },
 });
 export const fetchActivitiesSuccess = (activities, activityCount) => ({
   type: ActivityTypes.FETCH_ACTIVITIES_SUCCESS,
@@ -110,10 +113,20 @@ export const addCommentSuccess = (activityId, comment) => ({
 export const addCommentFailure = () => ({
   type: ActivityTypes.ADD_COMMENT_FAILURE,
 });
-export const fetchNext = (limit, page, isGoing, isHost, startDate) => {
+export const fetchNext = (
+  limit,
+  page,
+  isGoing,
+  isHost,
+  startDate,
+  onExpiredToken
+) => {
   return {
     type: ActivityTypes.FETCH_NEXT_PAGE_START,
     payload: { limit, page, isGoing, isHost, startDate },
+    meta: {
+      onExpiredToken,
+    },
   };
 };
 export const fetchNextSuccess = (activities, activityCount, page) => ({

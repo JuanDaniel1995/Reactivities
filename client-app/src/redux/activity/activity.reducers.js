@@ -201,13 +201,13 @@ const activityReducer = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         isFetchingNext: true,
-        filterChanged: false,
       };
     case ActivityTypes.FETCH_NEXT_PAGE_SUCCESS: {
       const { activities, activityCount, page } = action.payload;
       return {
         ...state,
         isFetchingNext: false,
+        filterChanged: false,
         activities: [...state.activities, ...activities],
         activityCount: activityCount,
         page: page,

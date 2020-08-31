@@ -100,6 +100,7 @@ export function* fetchUserActivitiesAsync({
     );
     yield put(fetchUserActivitiesSuccess(userActivities));
   } catch (error) {
+    console.log(error);
     yield put(fetchUserActivitiesFailure());
   }
 }

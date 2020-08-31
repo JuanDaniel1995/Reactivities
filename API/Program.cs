@@ -38,6 +38,7 @@ namespace API
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
+                    webBuilder.UseKestrel(x => x.AddServerHeader = false);
                     webBuilder.UseUrls("http://0.0.0.0:5000/");
                     webBuilder.UseStartup<Startup>();
                 });
